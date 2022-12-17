@@ -21,24 +21,21 @@ class TeamTest extends TestCase
      */
     public function testUserCanCreateATeam()
     {
-        $user = User::Factory()->create();
-        $teamName = $this->faker()->uuid();
+        // Create a user
+        $user = User::factory()->create();
+        $teamName = $this->faker()->uuid(); // Generate a random team name
 
-        $response = $this
-        ->actingAs($user)
-        ->post('/teams', [
+        // Send a POST request to the team creation endpoint as the user
+        $response = $this->actingAs($user)->post('/team', [
             'name' => $teamName
         ]);
 
-        $response
-        ->assertSessionHasNoErrors()
-        ->assertRedirect();
+        // Assert that there are no validation errors and that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
 
-        // Assert $user owns team
-        $team = Team::where(['user_id'=>$user->id,'name'=>$teamName])->first();
+        // Assert that the user owns the team with the specified name
+        $team = Team::where(['user_id' => $user->id, 'name' => $teamName])->first();
         $this->assertNotEmpty($team);
-
-
 
     }
 }

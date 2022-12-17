@@ -30,7 +30,7 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Team
-    Route::resource('teams', TeamController::class);
+    Route::resource('team', TeamController::class);
 
 });
 

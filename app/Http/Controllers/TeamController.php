@@ -38,7 +38,7 @@ class TeamController extends Controller
     {
         Auth::user()->teams()->create(['name'=>$request->get('name')]);
 
-        return Redirect::route('teams.index');
+        return Redirect::route('team.index');
     }
 
     /**
