@@ -83,6 +83,11 @@ class TeamController extends Controller
      */
     public function destroy(Team $team)
     {
-        //
+        if(Auth::user()->id!==$team->user->id){
+            abort(403, 'Unauthorized action.');
+        }
+        $team->forceDelete();
+
+        return Redirect::route('team.index');
     }
 }
