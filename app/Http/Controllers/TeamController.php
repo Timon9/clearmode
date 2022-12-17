@@ -83,9 +83,6 @@ class TeamController extends Controller
      */
     public function destroy(Team $team)
     {
-        if(Auth::user()->id!==$team->user->id){
-            abort(403, 'Unauthorized action.');
-        }
         $this->authorize('delete', $team);
 
         $team->delete();
