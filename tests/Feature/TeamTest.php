@@ -65,4 +65,36 @@ class TeamTest extends TestCase
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
     }
+
+        /**
+     * Test if a user can delete a team.
+     *
+     * @return void
+     */
+    public function testUserCanEditATeam()
+    {
+        $newName = $this->faker()->uuid();
+
+        // Create a user and a team owned by the user
+        $user = User::factory()->create();
+        $team = Team::factory()->create(['user_id' => $user->id]);
+
+        $OtherUser = User::factory()->create();
+        $otherTeam = Team::factory()->create(['user_id' => $OtherUser->id]);
+
+        // Send a PATCH request to the team edit endpoint as the user
+        $response = $this->actingAs($user)->patch("/team/{$team->id}",["name"=>$newName]);
+
+        // Assert that the team was edited and the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+        $this->assertDatabaseHas('teams', ['id' => $team->id,'name'=>$newName]);
+
+        // Send a PATCH request to the team edit endpoint as the other user. It should return an error
+        // because user has no permission
+        $response = $this->actingAs($user)->patch("/team/{$otherTeam->id}",["name"=>$newName]);
+        $response->assertForbidden();
+        $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
+        $this->assertDatabaseMissing('teams', ['id' => $otherTeam->id,'name'=>$newName]);
+
+    }
 }

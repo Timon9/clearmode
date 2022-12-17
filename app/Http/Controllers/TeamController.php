@@ -72,7 +72,11 @@ class TeamController extends Controller
      */
     public function update(Request $request, Team $team)
     {
-        //
+        $this->authorize('update', $team);
+        $team->name = $request->get("name");
+        $team->save();
+
+        return Redirect::route('team.index');
     }
 
     /**
