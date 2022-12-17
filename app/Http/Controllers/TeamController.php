@@ -86,7 +86,9 @@ class TeamController extends Controller
         if(Auth::user()->id!==$team->user->id){
             abort(403, 'Unauthorized action.');
         }
-        $team->forceDelete();
+        $this->authorize('delete', $team);
+
+        $team->delete();
 
         return Redirect::route('team.index');
     }
