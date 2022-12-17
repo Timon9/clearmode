@@ -33,9 +33,12 @@ class TeamTest extends TestCase
         // Assert that there are no validation errors and that the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
 
-        // Assert that the user owns the team with the specified name
-        $team = Team::where(['user_id' => $user->id, 'name' => $teamName])->first();
-        $this->assertNotEmpty($team);
+        // Find the newly created Team
+        $team = Team::where(['name'=>$teamName])->firstOrFail();
+        // Assert that the user is member of the team with the specified name
+        $this->assertTrue($user->teams->contains($team));
+
+
     }
 
     /**
@@ -47,10 +50,12 @@ class TeamTest extends TestCase
     {
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(['user_id' => $user->id]);
+        $team = Team::factory()->create();
+        $user->teams()->attach([$team->id]);
 
         $OtherUser = User::factory()->create();
-        $otherTeam = Team::factory()->create(['user_id' => $OtherUser->id]);
+        $otherTeam = Team::factory()->create();
+        $OtherUser->teams()->attach([$otherTeam->id]);
 
         // Send a DELETE request to the team deletion endpoint as the user
         $response = $this->actingAs($user)->delete("/team/{$team->id}");
@@ -66,8 +71,8 @@ class TeamTest extends TestCase
         $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
     }
 
-        /**
-     * Test if a user can delete a team.
+    /**
+     * Test if a user can edit a team.
      *
      * @return void
      */
@@ -77,24 +82,39 @@ class TeamTest extends TestCase
 
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(['user_id' => $user->id]);
+        $team = Team::factory()->create();
+        $user->teams()->attach([$team->id]);
 
         $OtherUser = User::factory()->create();
-        $otherTeam = Team::factory()->create(['user_id' => $OtherUser->id]);
+        $otherTeam = Team::factory()->create();
+        $OtherUser->teams()->attach([$otherTeam->id]);
+
 
         // Send a PATCH request to the team edit endpoint as the user
-        $response = $this->actingAs($user)->patch("/team/{$team->id}",["name"=>$newName]);
+        $response = $this->actingAs($user)->patch("/team/{$team->id}", ["name" => $newName]);
 
         // Assert that the team was edited and the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
-        $this->assertDatabaseHas('teams', ['id' => $team->id,'name'=>$newName]);
+        $this->assertDatabaseHas('teams', ['id' => $team->id, 'name' => $newName]);
 
         // Send a PATCH request to the team edit endpoint as the other user. It should return an error
         // because user has no permission
-        $response = $this->actingAs($user)->patch("/team/{$otherTeam->id}",["name"=>$newName]);
+        $response = $this->actingAs($user)->patch("/team/{$otherTeam->id}", ["name" => $newName]);
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
-        $this->assertDatabaseMissing('teams', ['id' => $otherTeam->id,'name'=>$newName]);
+        $this->assertDatabaseMissing('teams', ['id' => $otherTeam->id, 'name' => $newName]);
+    }
+
+     /**
+     * Test if a user can join a team.
+     *
+     * @return void
+     */
+    public function testUserCanJoinATeam()
+    {
+        // // Create a user and a team owned by the user
+        // $user = User::factory()->create();
+        // $team = Team::factory()->create(['user_id' => $user->id]);
 
     }
 }

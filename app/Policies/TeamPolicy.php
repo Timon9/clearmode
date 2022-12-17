@@ -53,7 +53,10 @@ class TeamPolicy
      */
     public function update(User $user, Team $team)
     {
-        return $user->id === $team->user->id;
+        if ($user->teams->contains($team)) {
+            // User is a member of the team
+            return true;
+        }
     }
 
     /**
@@ -65,7 +68,10 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team)
     {
-        return $user->id === $team->user->id;
+        if ($user->teams->contains($team)) {
+            // User is a member of the team
+            return true;
+        }
     }
 
     /**
