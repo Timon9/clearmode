@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\TeamRoleEnum;
 use App\Models\Team;
+use App\Models\TeamRole;
 use App\Models\User;
 use Database\Factories\UserFactory;
 use Illuminate\Foundation\Auth\User as AuthUser;
@@ -62,8 +63,10 @@ class TeamTest extends TestCase
         // Find the newly created Team
         $team = Team::where(['name' => $teamName])->firstOrFail();
 
+        $teamRole = TeamRole::where(['team_id'=>$team->id,'user_id'=>$user->id])->firstOrFail();
+
         // Assert that the user is member of the team with an admin role
-        $this->assertSame(TeamRoleEnum::ADMIN,$user->teams->first()->pivot->role);
+        $this->assertEquals(TeamRoleEnum::ADMIN->value,$teamRole->role);
     }
 
     /**
@@ -152,6 +155,13 @@ class TeamTest extends TestCase
 
         // Assert the second user has joined the team
         $this->assertTrue($secondUser->teams->contains($team));
+
+
+        $teamRole = TeamRole::where(['team_id'=>$team->id,'user_id'=>$secondUser->id])->firstOrFail();
+
+        // Assert that the user is member of the team with an admin role
+        $this->assertEquals(TeamRoleEnum::MEMBER->value,$teamRole->role);
+
 
         // Send a POST request to the team unjoin endpoint as the second user
         $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
