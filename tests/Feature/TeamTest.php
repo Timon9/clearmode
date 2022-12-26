@@ -34,11 +34,9 @@ class TeamTest extends TestCase
         $response->assertSessionHasNoErrors()->assertRedirect();
 
         // Find the newly created Team
-        $team = Team::where(['name'=>$teamName])->firstOrFail();
+        $team = Team::where(['name' => $teamName])->firstOrFail();
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
-
-
     }
 
     /**
@@ -105,16 +103,39 @@ class TeamTest extends TestCase
         $this->assertDatabaseMissing('teams', ['id' => $otherTeam->id, 'name' => $newName]);
     }
 
-     /**
+    /**
      * Test if a user can join a team.
      *
      * @return void
      */
-    public function testUserCanJoinATeam()
+    public function testUserCanJoinAndUnjoinATeam()
     {
         // // Create a user and a team owned by the user
-        // $user = User::factory()->create();
-        // $team = Team::factory()->create(['user_id' => $user->id]);
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $user->teams()->attach([$team->id]);
+
+        $secondUser = User::factory()->create();
+
+        // Send a POST request to the team join endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/join");
+
+        // Assert that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // Assert the second user has joined the team
+        $this->assertTrue($secondUser->teams->contains($team));
+
+        // Send a POST request to the team unjoin endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
+
+        // Assert that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        $secondUser->refresh();
+
+        // Assert the second user has left the team
+        $this->assertFalse($secondUser->teams->contains($team));
 
     }
 }

@@ -36,7 +36,7 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
-        Auth::user()->teams()->create(['name'=>$request->get('name')]);
+        Auth::user()->teams()->create(['name' => $request->get('name')]);
 
         return Redirect::route('team.index');
     }
@@ -91,6 +91,35 @@ class TeamController extends Controller
         $this->authorize('delete', $team);
 
         $team->delete();
+
+        return Redirect::route('team.index');
+    }
+
+
+    /**
+     * Join a team
+     *
+     * @param  \App\Models\Team  $team
+     * @return \Illuminate\Http\Response
+     */
+    public function join(Team $team)
+    {
+        $user = Auth::user();
+        $user->teams()->attach([$team->id]);
+
+        return Redirect::route('team.index');
+    }
+
+    /**
+     * Unjoin a team
+     *
+     * @param  \App\Models\Team  $team
+     * @return \Illuminate\Http\Response
+     */
+    public function unJoin(Team $team)
+    {
+        $user = Auth::user();
+        $user->teams()->detach($team->id);
 
         return Redirect::route('team.index');
     }
