@@ -5,6 +5,7 @@ namespace Tests\Feature;
 use App\Models\Team;
 use App\Models\User;
 use Database\Factories\UserFactory;
+use Enum\TeamRoleEnum;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
@@ -37,6 +38,32 @@ class TeamTest extends TestCase
         $team = Team::where(['name' => $teamName])->firstOrFail();
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
+    }
+
+    /**
+     * Test if a User who created a Team becomes an admin.
+     *
+     * @return void
+     */
+    public function testUserCanBecomeAdminAfterCreatingATeam()
+    {
+        // Create a user
+        $user = User::factory()->create();
+        $teamName = $this->faker()->uuid(); // Generate a random team name
+
+        // Send a POST request to the team creation endpoint as the user
+        $response = $this->actingAs($user)->post('/team', [
+            'name' => $teamName
+        ]);
+
+        // Assert that there are no validation errors and that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // Find the newly created Team
+        $team = Team::where(['name' => $teamName])->firstOrFail();
+
+        // Assert that the user is member of the team with an admin role
+        $this->assertSame(TeamRoleEnum::ADMIN,$user->teams->first()->pivot->role);
     }
 
     /**
