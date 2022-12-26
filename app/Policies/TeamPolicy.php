@@ -101,7 +101,7 @@ class TeamPolicy
      */
     public function restore(User $user, Team $team)
     {
-        //
+        return $this->delete($user, $team);
     }
 
     /**
@@ -113,6 +113,6 @@ class TeamPolicy
      */
     public function forceDelete(User $user, Team $team)
     {
-        //
+        return $this->delete($user, $team);
     }
 }
