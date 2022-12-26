@@ -1,6 +1,6 @@
 <?php
 
-namespace Enum;
+namespace App\Enums;
 
 /**
  * Enum class for roles in Team

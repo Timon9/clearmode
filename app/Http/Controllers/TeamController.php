@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\TeamRoleEnum;
 use App\Models\Team;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,7 +37,8 @@ class TeamController extends Controller
      */
     public function store(Request $request)
     {
-        Auth::user()->teams()->create(['name' => $request->get('name')]);
+        $team = Team::create(['name' => $request->get('name')]);
+        Auth::user()->teams()->attach($team, ['role' => TeamRoleEnum::ADMIN]);
 
         return Redirect::route('team.index');
     }
@@ -105,7 +107,7 @@ class TeamController extends Controller
     public function join(Team $team)
     {
         $user = Auth::user();
-        $user->teams()->attach([$team->id]);
+        $user->teams()->attach($team, ['role' => TeamRoleEnum::MEMBER]);
 
         return Redirect::route('team.index');
     }

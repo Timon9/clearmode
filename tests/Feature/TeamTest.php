@@ -2,10 +2,10 @@
 
 namespace Tests\Feature;
 
+use App\Enums\TeamRoleEnum;
 use App\Models\Team;
 use App\Models\User;
 use Database\Factories\UserFactory;
-use Enum\TeamRoleEnum;
 use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
