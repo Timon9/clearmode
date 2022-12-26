@@ -2,7 +2,9 @@
 
 namespace App\Policies;
 
+use App\Enums\TeamRoleEnum;
 use App\Models\Team;
+use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
@@ -53,10 +55,18 @@ class TeamPolicy
      */
     public function update(User $user, Team $team)
     {
-        if ($user->teams->contains($team)) {
-            // User is a member of the team
-            return true;
+        if (!$user->teams->contains($team)) {
+            // User is not a member of the team
+            return false;
         }
+
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->firstOrFail();
+        if($teamRole->role !== TeamRoleEnum::ADMIN->value){
+            // User is not a admin
+            return false;
+        }
+
+        return true;
     }
 
     /**
@@ -68,10 +78,18 @@ class TeamPolicy
      */
     public function delete(User $user, Team $team)
     {
-        if ($user->teams->contains($team)) {
-            // User is a member of the team
-            return true;
+        if (!$user->teams->contains($team)) {
+            // User is not a member of the team
+            return false;
         }
+
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->firstOrFail();
+        if($teamRole->role !== TeamRoleEnum::ADMIN->value){
+            // User is not a admin
+            return false;
+        }
+
+        return true;
     }
 
     /**
