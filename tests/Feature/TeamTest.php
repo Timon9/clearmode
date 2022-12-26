@@ -46,7 +46,7 @@ class TeamTest extends TestCase
      *
      * @return void
      */
-    public function testUserCanBecomeAdminAfterCreatingATeam()
+    public function testUserWillAutomaticlyBecomeAdminAfterCreatingATeam()
     {
         // Create a user
         $user = User::factory()->create();
@@ -70,11 +70,11 @@ class TeamTest extends TestCase
     }
 
     /**
-     * Test if a user can delete a team.
+     * Test if a user can delete a team if the user has admin rights.
      *
      * @return void
      */
-    public function testUserCanDeleteATeam()
+    public function testUserCanDeleteATeamAsAdmin()
     {
         // Create a user and a team owned by the user
         $user = User::factory()->create();
@@ -106,11 +106,11 @@ class TeamTest extends TestCase
     }
 
     /**
-     * Test if a user can edit a team.
+     * Test if a user can edit a team if the user has admin rights.
      *
      * @return void
      */
-    public function testUserCanEditATeam()
+    public function testUserCanEditATeamAsAdmin()
     {
         $newName = $this->faker()->uuid();
 
