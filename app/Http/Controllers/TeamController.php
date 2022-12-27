@@ -139,7 +139,12 @@ class TeamController extends Controller
     public function unJoin(Team $team)
     {
         $user = Auth::user();
+        $teamRoles=TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id]);
+
         $user->teams()->detach($team->id);
+
+        $teamRoles->delete();
+
 
         return Redirect::route('team.index');
     }

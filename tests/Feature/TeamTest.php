@@ -86,8 +86,8 @@ class TeamTest extends TestCase
         $otherUser->teams()->attach([$otherTeam->id]);
 
         $teamRole = new TeamRole();
-        $teamRole->team_id=$team->id;
-        $teamRole->user_id=$user->id;
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
         $teamRole->role = TeamRoleEnum::ADMIN;
         $teamRole->save();
 
@@ -120,8 +120,8 @@ class TeamTest extends TestCase
         $user->teams()->attach([$team->id]);
 
         $teamRole = new TeamRole();
-        $teamRole->team_id=$team->id;
-        $teamRole->user_id=$user->id;
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
         $teamRole->role = TeamRoleEnum::ADMIN;
         $teamRole->save();
 
@@ -178,13 +178,17 @@ class TeamTest extends TestCase
         // Send a POST request to the team unjoin endpoint as the second user
         $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
 
-        // Assert that the user was redirected
+        // Assert that the second user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
 
         $secondUser->refresh();
 
         // Assert the second user has left the team
         $this->assertFalse($secondUser->teams->contains($team));
+
+        // Assert that TeamRole has been deleted
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->first();
+        $this->assertEmpty($teamRole);
     }
 
     /**
