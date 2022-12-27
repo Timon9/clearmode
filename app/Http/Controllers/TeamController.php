@@ -126,8 +126,6 @@ class TeamController extends Controller
         $teamRole->role = TeamRoleEnum::MEMBER;
         $teamRole->save();
 
-
-
         return Redirect::route('team.index');
     }
 

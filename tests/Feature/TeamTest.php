@@ -6,8 +6,6 @@ use App\Enums\TeamRoleEnum;
 use App\Models\Team;
 use App\Models\TeamRole;
 use App\Models\User;
-use Database\Factories\UserFactory;
-use Illuminate\Foundation\Auth\User as AuthUser;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
@@ -65,7 +63,7 @@ class TeamTest extends TestCase
 
         $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->firstOrFail();
 
-        // Assert that the user is member of the team with an admin role
+        // Assert that the user is member of the team with an ADMIN role
         $this->assertEquals(TeamRoleEnum::ADMIN->value, $teamRole->role);
     }
 
@@ -171,7 +169,7 @@ class TeamTest extends TestCase
 
         $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
 
-        // Assert that the user is member of the team with an admin role
+        // Assert that the user is member of the team with an MEMBER role
         $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
 
 
@@ -257,7 +255,7 @@ class TeamTest extends TestCase
         $this->assertDatabaseHas('teams', ['id' => $team->id]);
     }
 
-  /**
+    /**
      * Test if a User can create a Team.
      *
      * @return void
@@ -281,13 +279,52 @@ class TeamTest extends TestCase
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
 
-         // Send a POST request to the team unjoin endpoint as the second user
-         $response = $this->actingAs($user)->post("/team/{$team->id}/unjoin");
-         $user->refresh();
+        // Send a POST request to the team unjoin endpoint as the second user
+        $response = $this->actingAs($user)->post("/team/{$team->id}/unjoin");
+        $user->refresh();
 
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
-
     }
 
+    /**
+     * Test if a user can join a team and can be made an admin.
+     *
+     * @return void
+     */
+    public function testUserCanJoinAndUnjoinATeamAndBeGivenAnAdminRole()
+    {
+        // // Create a user and a team owned by the user
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $user->teams()->attach([$team->id]);
+
+        $secondUser = User::factory()->create();
+
+        // Send a POST request to the team join endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/join");
+
+        // Assert that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // Assert the second user has joined the team
+        $this->assertTrue($secondUser->teams->contains($team));
+
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
+
+        // Assert that the user is member of the team with an MEMBER role
+        $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
+
+        // Send a POST request to the team add-role endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN]);
+
+        // Assert this has failed. A MEMBER can't promote itself to ADMIN
+        $this->assertEquals(0, TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
+
+        // Send a POST request to the team add-role endpoint as the first user
+        $response = $this->actingAs($user)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN]);
+
+        // Assert this has succeeded. secondUser is now ADMIN
+        $this->assertEquals(1, TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
+    }
 }
