@@ -256,7 +256,7 @@ class TeamTest extends TestCase
     }
 
     /**
-     * Test if a User can create a Team.
+     * Test if an admin is not able to join.
      *
      * @return void
      */
@@ -279,8 +279,16 @@ class TeamTest extends TestCase
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
 
+        // Make user an admin
+        $teamRole = new TeamRole();
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
+        $teamRole->role = TeamRoleEnum::ADMIN;
+        $teamRole->save();
+
         // Send a POST request to the team unjoin endpoint as the second user
         $response = $this->actingAs($user)->post("/team/{$team->id}/unjoin");
+        $response->assertStatus(403);
         $user->refresh();
 
         // Assert that the user is member of the team with the specified name
@@ -298,6 +306,13 @@ class TeamTest extends TestCase
         $user = User::factory()->create();
         $team = Team::factory()->create();
         $user->teams()->attach([$team->id]);
+
+        // Make user admin
+        $teamRole = new TeamRole();
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
+        $teamRole->role = TeamRoleEnum::ADMIN;
+        $teamRole->save();
 
         $secondUser = User::factory()->create();
 

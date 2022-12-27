@@ -138,19 +138,11 @@ class TeamController extends Controller
      */
     public function unJoin(Team $team)
     {
+        $this->authorize('unjoin', $team);
+
         $user = Auth::user();
-
-        // Check if the user is an admin. Admin's can't leave the team, they need to delete the team first. Else, no-one would have the right
-        // to delete or administrate the team.
-
-        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() == 0) {
-            throw new Exception("An admin can't unjoin a team because we need someone to be able to delete/manage the team. Admin can empty a team and than delete the team or switch roles.");
-        }
-
         $user->teams()->detach($team->id);
-
         TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->delete();
-
 
         return Redirect::route('team.index');
     }
@@ -163,23 +155,15 @@ class TeamController extends Controller
      */
     public function role(Team $team, Request $request)
     {
-        $user = Auth::user();
+        $this->authorize('role', $team);
+
         $givenUserId = $request->get("user_id");
-        // $role = $this->request->get("role");
-
-        // $this->request->validate([
-        //     'role' => [new Enum(TeamRoleEnum::class)],
-        // ]);
-
-        // Check if the user is an admin. Admin's can add roles to team-members
-        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() == 0) {
-            throw new Exception("You need admin right to give roles to Team member.");
-        }
+        $role = $request->get("role");
 
         $teamRole = new TeamRole();
         $teamRole->team_id = $team->id;
         $teamRole->user_id = $givenUserId;
-        $teamRole->role = TeamRoleEnum::ADMIN;
+        $teamRole->role = $role;
         $teamRole->save();
 
         return Redirect::route('team.index');
