@@ -300,7 +300,7 @@ class TeamTest extends TestCase
      *
      * @return void
      */
-    public function testUserCanJoinAndUnjoinATeamAndBeGivenAnAdminRole()
+    public function testUserBeGivenAnAdminRoleByAnAdminButNotByAUser()
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
