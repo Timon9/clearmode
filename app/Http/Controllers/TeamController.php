@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Enums\TeamRoleEnum;
 use App\Models\Team;
 use App\Models\TeamRole;
-use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Validation\Rules\Enum;
 
 class TeamController extends Controller
 {
