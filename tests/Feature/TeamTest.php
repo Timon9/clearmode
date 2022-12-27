@@ -256,4 +256,38 @@ class TeamTest extends TestCase
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $team->id]);
     }
+
+  /**
+     * Test if a User can create a Team.
+     *
+     * @return void
+     */
+    public function testTeamAdminCantUnjoin()
+    {
+        // Create a user
+        $user = User::factory()->create();
+        $teamName = $this->faker()->uuid(); // Generate a random team name
+
+        // Send a POST request to the team creation endpoint as the user
+        $response = $this->actingAs($user)->post('/team', [
+            'name' => $teamName
+        ]);
+
+        // Assert that there are no validation errors and that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // Find the newly created Team
+        $team = Team::where(['name' => $teamName])->firstOrFail();
+        // Assert that the user is member of the team with the specified name
+        $this->assertTrue($user->teams->contains($team));
+
+         // Send a POST request to the team unjoin endpoint as the second user
+         $response = $this->actingAs($user)->post("/team/{$team->id}/unjoin");
+         $user->refresh();
+
+        // Assert that the user is member of the team with the specified name
+        $this->assertTrue($user->teams->contains($team));
+
+    }
+
 }

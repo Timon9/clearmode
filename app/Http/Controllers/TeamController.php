@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\TeamRoleEnum;
 use App\Models\Team;
 use App\Models\TeamRole;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
@@ -44,8 +45,8 @@ class TeamController extends Controller
 
 
         $teamRole = new TeamRole();
-        $teamRole->team_id=$team->id;
-        $teamRole->user_id=$user->id;
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
         $teamRole->role = TeamRoleEnum::ADMIN;
         $teamRole->save();
 
@@ -120,8 +121,8 @@ class TeamController extends Controller
         $user->teams()->attach($team);
 
         $teamRole = new TeamRole();
-        $teamRole->team_id=$team->id;
-        $teamRole->user_id=$user->id;
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $user->id;
         $teamRole->role = TeamRoleEnum::MEMBER;
         $teamRole->save();
 
@@ -139,11 +140,17 @@ class TeamController extends Controller
     public function unJoin(Team $team)
     {
         $user = Auth::user();
-        $teamRoles=TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id]);
+
+        // Check if the user is an admin. Admin's can't leave the team, they need to delete the team first. Else, no-one would have the right
+        // to delete or administrate the team.
+
+        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() > 0) {
+            throw new Exception("An admin can't unjoin a team because we need someone to be able to delete/manage the team. Admin can empty a team and than delete the team or switch roles.");
+        }
 
         $user->teams()->detach($team->id);
 
-        $teamRoles->delete();
+        TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->delete();
 
 
         return Redirect::route('team.index');
