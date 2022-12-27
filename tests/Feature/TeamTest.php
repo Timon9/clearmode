@@ -316,15 +316,15 @@ class TeamTest extends TestCase
         $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
 
         // Send a POST request to the team add-role endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN]);
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
 
         // Assert this has failed. A MEMBER can't promote itself to ADMIN
-        $this->assertEquals(0, TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
+        $this->assertEquals(0, TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
 
         // Send a POST request to the team add-role endpoint as the first user
-        $response = $this->actingAs($user)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN]);
+        $response = $this->actingAs($user)->post("/team/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
 
         // Assert this has succeeded. secondUser is now ADMIN
-        $this->assertEquals(1, TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
+        $this->assertEquals(1,TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
     }
 }

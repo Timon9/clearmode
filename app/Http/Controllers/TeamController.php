@@ -9,6 +9,7 @@ use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
+use Illuminate\Validation\Rules\Enum;
 
 class TeamController extends Controller
 {
@@ -142,7 +143,7 @@ class TeamController extends Controller
         // Check if the user is an admin. Admin's can't leave the team, they need to delete the team first. Else, no-one would have the right
         // to delete or administrate the team.
 
-        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() > 0) {
+        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() == 0) {
             throw new Exception("An admin can't unjoin a team because we need someone to be able to delete/manage the team. Admin can empty a team and than delete the team or switch roles.");
         }
 
@@ -150,6 +151,36 @@ class TeamController extends Controller
 
         TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->delete();
 
+
+        return Redirect::route('team.index');
+    }
+
+     /**
+     * Give or role to a team member
+     *
+     * @param  \App\Models\Team  $team
+     * @return \Illuminate\Http\Response
+     */
+    public function role(Team $team, Request $request)
+    {
+        $user = Auth::user();
+        $givenUserId = $request->get("user_id");
+        // $role = $this->request->get("role");
+
+        // $this->request->validate([
+        //     'role' => [new Enum(TeamRoleEnum::class)],
+        // ]);
+
+        // Check if the user is an admin. Admin's can add roles to team-members
+        if (TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id, 'role' => TeamRoleEnum::ADMIN->value])->count() == 0) {
+            throw new Exception("You need admin right to give roles to Team member.");
+        }
+
+        $teamRole = new TeamRole();
+        $teamRole->team_id = $team->id;
+        $teamRole->user_id = $givenUserId;
+        $teamRole->role = TeamRoleEnum::ADMIN;
+        $teamRole->save();
 
         return Redirect::route('team.index');
     }

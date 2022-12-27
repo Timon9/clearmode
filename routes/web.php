@@ -33,6 +33,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('team', TeamController::class);
     Route::post('/team/{team}/join', [TeamController::class,'join']);
     Route::post('/team/{team}/unjoin', [TeamController::class,'unjoin']);
+    Route::post('/team/{team}/role', [TeamController::class,'role']);
 
 });
 
