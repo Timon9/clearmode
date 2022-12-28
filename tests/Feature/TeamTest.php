@@ -144,15 +144,15 @@ class TeamTest extends TestCase
     }
 
     /**
-     * Test if a user can join a team.
+     * Test if a user can join a team public.
      *
      * @return void
      */
-    public function testUserCanJoinAndUnjoinATeam()
+    public function testUserCanJoinAndUnjoinAPublicTeam()
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create();
+        $team = Team::factory()->create(["public"=>true]);
         $user->teams()->attach([$team->id]);
 
         $secondUser = User::factory()->create();
@@ -187,6 +187,52 @@ class TeamTest extends TestCase
         // Assert that TeamRole has been deleted
         $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->first();
         $this->assertEmpty($teamRole);
+    }
+
+     /**
+     * Test if a user can join a private team with an invite only.
+     *
+     * @return void
+     */
+    public function testUserCanJoinAndUnjoinAPrivateTeamWithAInvite()
+    {
+        // // Create a user and a team owned by the user
+        $user = User::factory()->create();
+        $team = Team::factory()->create();
+        $user->teams()->attach([$team->id]);
+
+        $secondUser = User::factory()->create();
+
+        // Send a POST request to the team join endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/join");
+
+        // Assert that the user was given a 403, you need an invite to join
+        $response->assertStatus(403);
+
+        // Assert the second user has not joined the team. You can't witout an invite.
+        $this->assertFalse($secondUser->teams->contains($team));
+
+
+        // $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
+
+        // // Assert that the user is member of the team with an MEMBER role
+        // $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
+
+
+        // // Send a POST request to the team unjoin endpoint as the second user
+        // $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
+
+        // // Assert that the second user was redirected
+        // $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // $secondUser->refresh();
+
+        // // Assert the second user has left the team
+        // $this->assertFalse($secondUser->teams->contains($team));
+
+        // // Assert that TeamRole has been deleted
+        // $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->first();
+        // $this->assertEmpty($teamRole);
     }
 
     /**

@@ -16,8 +16,23 @@ class Team extends Model
      */
     protected $fillable = [
         'name',
+        'public',
     ];
 
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array
+     */
+    protected $casts = [
+        'public' => 'boolean',
+    ];
+
+    /**
+     * The users that belong to the team.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
     public function users()
     {
         return $this->belongsToMany(User::class);

@@ -116,6 +116,8 @@ class TeamController extends Controller
      */
     public function join(Team $team)
     {
+        $this->authorize('join', $team);
+
         $user = Auth::user();
         $user->teams()->attach($team);
 

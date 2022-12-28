@@ -118,6 +118,22 @@ class TeamPolicy
     }
 
     /**
+     * Determine whether the user can join a team
+     *
+     * @param  \App\Models\User  $user
+     * @param  \App\Models\Team  $team
+     * @return \Illuminate\Auth\Access\Response|bool
+     */
+    public function join(User $user, Team $team)
+    {
+        if ($team->public === true){
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Determine whether the user can unjoin a team
      *
      * @param  \App\Models\User  $user
