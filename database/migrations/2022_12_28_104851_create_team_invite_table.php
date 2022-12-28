@@ -21,6 +21,10 @@ return new class extends Migration
 
             $table->foreign('team_id')->references('id')->on('teams')->onDelete('cascade');
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
+
+            // Add a unique index on the team_id and user_id columns
+            $table->unique(['team_id', 'user_id'], 'team_user_unique');
+
         });
     }
 

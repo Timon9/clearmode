@@ -195,7 +195,7 @@ class TeamTest extends TestCase
      *
      * @return void
      */
-    public function testUserCanJoinAndUnjoinAPrivateTeamWithAInvite()
+    public function testUserCanJoinAndUnjoinAPrivateTeamWithAnInvite()
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
@@ -260,7 +260,7 @@ class TeamTest extends TestCase
 
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create();
+        $team = Team::factory()->create(["public"=>true]);
         $user->teams()->attach([$team->id]);
 
         $otherUser = User::factory()->create();
@@ -293,7 +293,7 @@ class TeamTest extends TestCase
 
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create();
+        $team = Team::factory()->create(["public"=>true]);
         $user->teams()->attach([$team->id]);
 
         $otherUser = User::factory()->create();
@@ -364,7 +364,7 @@ class TeamTest extends TestCase
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create();
+        $team = Team::factory()->create(["public"=>true]);
         $user->teams()->attach([$team->id]);
 
         // Make user admin
