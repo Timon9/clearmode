@@ -4,6 +4,7 @@ namespace App\Policies;
 
 use App\Enums\TeamRoleEnum;
 use App\Models\Team;
+use App\Models\TeamInvite;
 use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Auth\Access\HandlesAuthorization;
@@ -127,6 +128,11 @@ class TeamPolicy
     public function join(User $user, Team $team)
     {
         if ($team->public === true){
+            return true;
+        }
+
+        // Check if the user has an invite
+        if (TeamInvite::where(['team_id' => $team->id, 'user_id' => $user->id])->count()>0){
             return true;
         }
 

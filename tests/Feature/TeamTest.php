@@ -4,6 +4,7 @@ namespace Tests\Feature;
 
 use App\Enums\TeamRoleEnum;
 use App\Models\Team;
+use App\Models\TeamInvite;
 use App\Models\TeamRole;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -212,27 +213,40 @@ class TeamTest extends TestCase
         // Assert the second user has not joined the team. You can't witout an invite.
         $this->assertFalse($secondUser->teams->contains($team));
 
+        // Create an invite
+        $teamInvite = new TeamInvite();
+        $teamInvite->user_id = $secondUser->id;
+        $teamInvite->team_id = $team->id;
+        $teamInvite->save();
 
-        // $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
+        // Send a POST request to the team join endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/join");
 
-        // // Assert that the user is member of the team with an MEMBER role
-        // $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
+        // Assert that the second user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
 
 
-        // // Send a POST request to the team unjoin endpoint as the second user
-        // $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
 
-        // // Assert that the second user was redirected
-        // $response->assertSessionHasNoErrors()->assertRedirect();
+         $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
 
-        // $secondUser->refresh();
+        // Assert that the user is member of the team with an MEMBER role
+        $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
 
-        // // Assert the second user has left the team
-        // $this->assertFalse($secondUser->teams->contains($team));
 
-        // // Assert that TeamRole has been deleted
-        // $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->first();
-        // $this->assertEmpty($teamRole);
+        // Send a POST request to the team unjoin endpoint as the second user
+        $response = $this->actingAs($secondUser)->post("/team/{$team->id}/unjoin");
+
+        // Assert that the second user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        $secondUser->refresh();
+
+        // Assert the second user has left the team
+        $this->assertFalse($secondUser->teams->contains($team));
+
+        // Assert that TeamRole has been deleted
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->first();
+        $this->assertEmpty($teamRole);
     }
 
     /**
