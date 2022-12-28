@@ -29,11 +29,11 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Team
-    Route::resource('team', TeamController::class);
-    Route::post('/team/{team}/join', [TeamController::class,'join']);
-    Route::post('/team/{team}/unjoin', [TeamController::class,'unjoin']);
-    Route::post('/team/{team}/role', [TeamController::class,'role']);
+    // Teams
+    Route::resource('teams', TeamController::class);
+    Route::post('/teams/{team}/join', [TeamController::class,'join']);
+    Route::post('/teams/{team}/unjoin', [TeamController::class,'unjoin']);
+    Route::post('/teams/{team}/role', [TeamController::class,'role']);
 
 });
 

@@ -50,7 +50,7 @@ class TeamController extends Controller
         $teamRole->save();
 
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 
     /**
@@ -89,7 +89,7 @@ class TeamController extends Controller
         $team->name = $request->get("name");
         $team->save();
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 
     /**
@@ -104,7 +104,7 @@ class TeamController extends Controller
 
         $team->delete();
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 
 
@@ -127,7 +127,7 @@ class TeamController extends Controller
         $teamRole->role = TeamRoleEnum::MEMBER;
         $teamRole->save();
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 
     /**
@@ -144,7 +144,7 @@ class TeamController extends Controller
         $user->teams()->detach($team->id);
         TeamRole::where(['team_id' => $team->id, 'user_id' => $user->id])->delete();
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 
      /**
@@ -166,6 +166,6 @@ class TeamController extends Controller
         $teamRole->role = $role;
         $teamRole->save();
 
-        return Redirect::route('team.index');
+        return Redirect::route('teams.index');
     }
 }
