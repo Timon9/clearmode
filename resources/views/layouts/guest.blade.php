@@ -10,6 +10,9 @@
         <!-- Fonts -->
         <link rel="stylesheet" href="https://fonts.bunny.net/css2?family=Nunito:wght@400;600;700&display=swap">
 
+        <!-- Fontawesome -->
+        <script src="https://kit.fontawesome.com/2186ff710a.js" crossorigin="anonymous"></script>
+
         <link rel="shortcut icon" href="{{ asset('favicon.ico') }}">
 
         <!-- Scripts -->
