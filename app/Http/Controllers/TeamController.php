@@ -45,7 +45,10 @@ class TeamController extends Controller
     public function store(Request $request)
     {
         $user = Auth::user();
-        $team = Team::create(['name' => $request->get('name')]);
+        $team = Team::create([
+            'name' => $request->get('name'),
+            'public' => $request->get('visibility') === "public",
+        ]);
         $user->teams()->attach($team);
 
 

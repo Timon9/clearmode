@@ -52,11 +52,11 @@ class TeamTest extends TestCase
 
 
     /**
-     * Test if a User can create a Team.
+     * Test if a User can create a public Team.
      *
      * @return void
      */
-    public function testUserCanCreateATeam()
+    public function testUserCanCreateAPublicTeam()
     {
         // Create a user
         $user = User::factory()->create();
@@ -64,7 +64,8 @@ class TeamTest extends TestCase
 
         // Send a POST request to the team creation endpoint as the user
         $response = $this->actingAs($user)->post('/teams', [
-            'name' => $teamName
+            'name' => $teamName,
+            'visibility'=>'public',
         ]);
 
         // Assert that there are no validation errors and that the user was redirected
@@ -74,6 +75,33 @@ class TeamTest extends TestCase
         $team = Team::where(['name' => $teamName])->firstOrFail();
         // Assert that the user is member of the team with the specified name
         $this->assertTrue($user->teams->contains($team));
+        $this->assertTrue($team->public);
+    }
+    /**
+     * Test if a User can create a PRIVATE Team.
+     *
+     * @return void
+     */
+    public function testUserCanCreateAPrivateTeam()
+    {
+        // Create a user
+        $user = User::factory()->create();
+        $teamName = $this->faker()->uuid(); // Generate a random team name
+
+        // Send a POST request to the team creation endpoint as the user
+        $response = $this->actingAs($user)->post('/teams', [
+            'name' => $teamName,
+            'visibility'=>'private',
+        ]);
+
+        // Assert that there are no validation errors and that the user was redirected
+        $response->assertSessionHasNoErrors()->assertRedirect();
+
+        // Find the newly created Team
+        $team = Team::where(['name' => $teamName])->firstOrFail();
+        // Assert that the user is member of the team with the specified name
+        $this->assertTrue($user->teams->contains($team));
+        $this->assertFalse($team->public);
     }
 
     /**
