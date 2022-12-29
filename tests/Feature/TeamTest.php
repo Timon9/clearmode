@@ -17,18 +17,35 @@ class TeamTest extends TestCase
 
 
     /**
-     * Test if the teamcenter is displayed (/teams)
+     * Test if the team index is displayed (/teams)
      *
      * @return void
      */
 
-     public function test_team_center_is_displayed()
+     public function test_team_index_is_displayed()
      {
          $user = User::factory()->create();
 
          $response = $this
              ->actingAs($user)
              ->get('/teams');
+
+         $response->assertOk();
+     }
+
+     /**
+     * Test if the teams/create is displayed
+     *
+     * @return void
+     */
+
+     public function test_team_create_is_displayed()
+     {
+         $user = User::factory()->create();
+
+         $response = $this
+             ->actingAs($user)
+             ->get('/teams/create');
 
          $response->assertOk();
      }

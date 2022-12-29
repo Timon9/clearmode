@@ -28,9 +28,12 @@ class TeamController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
-        //
+        return view('teams.create', [
+            'user' => $request->user(),
+        ]);
+
     }
 
     /**
