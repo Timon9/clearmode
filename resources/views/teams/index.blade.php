@@ -12,24 +12,28 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
-                    <!-- Start: Search -->
-                    <form action="{{ route('teams.index') }}" method="GET" class="flex items-center mb-4">
-                        <x-text-input id="search" class="block mt-1 w-full" type="text" name="search"
-                            placeholder="Search teams..." :value="$search" />
-                        <x-button>
-                            Search
-                        </x-button>
-                    </form>
-                    @if (!empty($search))
-                        <p class="mb-4 font-bold text-sm text-gray-700">{{ $teams->total() }} results for
-                            "{{ $search }}". <a href="{{ route('teams.index') }}"
-                                class="text-gray-700 hover:text-blue-800 underline">Clear filter</a></p>
-                    @endif
-                    <!-- End: Search -->
 
-                    <x-primary-link href="{{ route('teams.create') }}">
-                        <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
-                    </x-primary-link>
+                    <!-- Toolbar -->
+                    <div class="border-b-2 py-4">
+                        <!-- Start: Search -->
+                        <form action="{{ route('teams.index') }}" method="GET" class="flex items-center mb-4">
+                            <x-text-input id="search" class="block mt-1 w-full" type="text" name="search"
+                                placeholder="{{ __('Search teams...') }}" :value="$search" />
+                        </form>
+                        @if (!empty($search))
+                            <p class="mb-4 font-bold text-sm text-gray-700">{{ $teams->total() }}
+                                {{ __('results for') }}
+                                "{{ $search }}". <a href="{{ route('teams.index') }}"
+                                    class="text-gray-700 hover:text-blue-800 underline">Clear filter</a></p>
+                        @endif
+                        <!-- End: Search -->
+
+                        <x-primary-link href="{{ route('teams.create') }}">
+                            <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
+                        </x-primary-link>
+
+                    </div>
+
                     <!-- List of teams -->
                     <div class="mt-3">
                         @foreach ($teams as $team)

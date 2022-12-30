@@ -31,6 +31,7 @@ class TeamController extends Controller
 
         $teams = $teams->paginate(25);
 
+
         return view('teams.index', [
             'user' => $request->user(),
             'teams' => $teams,
