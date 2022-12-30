@@ -16,30 +16,36 @@
                         <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
                     </x-primary-link>
                     <!-- List of teams -->
-                    <div class="">
+                    <div class="mt-3">
                         @foreach ($teams as $team)
                             <div class="border-b-2 py-4">
-                                <div class="border-b-2 py-4">
+                                <div class="">
                                     <strong class="font-bold"> {{ ucfirst($team->name) }}</strong>
                                     <!-- start: visibility -->
-                                    <span
-                                        class="inline-block bg-blue-100 text-blue-800 text-xs font-bold rounded-full px-3 py-1 ml-2 mb-2">
-                                        @if ($team->public)
-                                        <i class="fas fa-globe"></i>
-                                        Public
-                                        @else
-                                        <i class="fas fa-lock"></i>
-                                        Private
-                                        @endif
+                                    @if ($team->public)
+                                        <span
+                                            class="inline-block bg-orange-100 text-orange-800 text-xs font-bold rounded-full px-3 py-1 ml-2 mb-2">
+                                            <i class="fas fa-globe"></i>
+                                            {{ __('Public') }}
+                                        </span>
+                                    @else
+                                        <span
+                                            class="inline-block bg-blue-100 text-blue-800 text-xs font-bold rounded-full px-3 py-1 ml-2 mb-2">
+                                            <i class="fas fa-lock"></i>
+                                            {{ __('Private') }}
+                                        </span>
+                                    @endif
 
-                                    </span>
                                     <!-- end: visibility -->
 
-                                    <br />
                                     <div class="text-sm leading-5 text-gray-500">
                                         {{ $team->created_at->diffForHumans() }}
                                     </div>
+                                    <div class="text-sm leading-5 text-gray-500">
+                                        12 members
+                                    </div>
                                 </div>
+                            </div>
                         @endforeach
                     </div>
 
