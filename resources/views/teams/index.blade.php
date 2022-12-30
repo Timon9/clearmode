@@ -35,7 +35,6 @@
                                             {{ __('Private') }}
                                         </span>
                                     @endif
-
                                     <!-- end: visibility -->
 
                                     <div class="text-sm leading-5 text-gray-500">
@@ -44,6 +43,21 @@
                                     <div class="text-sm leading-5 text-gray-500">
                                         12 members
                                     </div>
+
+                                    <!-- Start: Team members -->
+                                    <div class="flex flex-wrap w-400">
+                                        @foreach ($team->users as $user)
+                                        <div class="mr-2">
+                                            <img src="{{$user->avatar}}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full">
+                                        </div>
+                                        @endforeach
+                                    </div>
+
+
+
+
+                                    <!-- End: Team members -->
+
                                 </div>
                             </div>
                         @endforeach
