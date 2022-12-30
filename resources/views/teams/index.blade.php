@@ -16,11 +16,12 @@
                     <!-- Start: Toolbar -->
                     <div class="border-b-2">
 
-                        <div class=" mb-4 py-4 w-100">
+                        <div class="mb-4 py-4 flex">
                             <!-- Start: New team -->
-                            <x-primary-link href="{{ route('teams.create') }}" class="mr-4 mt-1 h-10 float-left">
-                                <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
-                            </x-primary-link>
+                                <x-primary-link href="{{ route('teams.create') }}" class="mr-4 mt-1 h-10">
+                                    <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
+                                </x-primary-link>
+
 
                             <!-- Start: Search -->
                             <form action="{{ route('teams.index') }}" method="GET" class="flex items-center w-3/4">
