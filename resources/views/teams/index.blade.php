@@ -14,12 +14,24 @@
                 <div class="p-6 text-gray-900">
 
                     <!-- Start: Toolbar -->
-                    <div class="border-b-2 py-4">
-                        <!-- Start: Search -->
-                        <form action="{{ route('teams.index') }}" method="GET" class="flex items-center mb-4">
-                            <x-text-input id="search" class="block mt-1 w-full" type="text" name="search"
-                                placeholder="{{ __('Search teams...') }}" :value="$search" />
-                        </form>
+                    <div class="border-b-2">
+
+                        <div class=" mb-4 py-4 w-100">
+                            <!-- Start: New team -->
+                            <x-primary-link href="{{ route('teams.create') }}" class="mr-4 mt-1 h-10 float-left">
+                                <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
+                            </x-primary-link>
+
+                            <!-- Start: Search -->
+                            <form action="{{ route('teams.index') }}" method="GET" class="flex items-center w-3/4">
+                                <x-text-input id="search" class="block mt-1 w-full" type="text" name="search"
+                                    placeholder="{{ __('Search teams...') }}" :value="$search" />
+                                <x-button class="ml-2 block mt-1 h-10">
+                                    <i class="fas fa-search mr-2"></i>{{ __('Search') }}
+                                </x-button>
+                            </form>
+                        </div>
+
                         @if (!empty($search))
                             <p class="mb-4 font-bold text-sm text-gray-700">{{ $teams->total() }}
                                 {{ __('results for') }}
@@ -28,9 +40,6 @@
                         @endif
                         <!-- End: Search -->
 
-                        <x-primary-link href="{{ route('teams.create') }}">
-                            <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
-                        </x-primary-link>
 
                     </div>
                     <!-- End: Toolbar -->
@@ -41,7 +50,8 @@
                             <div class="border-b-2 px-4 py-4   mb-3">
 
                                 <div class="">
-                                    <a href="{{route('teams.show',$team->slug)}}" class="font-bold text-blue-600 underline"> {{ ucfirst($team->name) }}</a>
+                                    <a href="{{ route('teams.show', $team->slug) }}"
+                                        class="font-bold text-blue-600 underline"> {{ ucfirst($team->name) }}</a>
                                     <!-- start: visibility -->
                                     @if ($team->public)
                                         <span
