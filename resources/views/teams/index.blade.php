@@ -63,6 +63,10 @@
                         @endforeach
                     </div>
 
+                    <div class="mt-3">
+                        {{ $teams->links() }}
+                    </div>
+
                 </div>
             </div>
         </div>
