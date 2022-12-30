@@ -3,7 +3,6 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            <i class="fa-regular fa-user mr-2"></i>
             {{ __('Profile') }}
         </h2>
     </x-slot>

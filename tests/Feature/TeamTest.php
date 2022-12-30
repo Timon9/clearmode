@@ -34,6 +34,36 @@ class TeamTest extends TestCase
     }
 
     /**
+     * Test if the team view is displayed (/teams/slug)
+     *
+     * @return void
+     */
+
+    public function testCanViewTeamUsingSlug()
+    {
+        $user = User::factory()->create();
+
+        // Create a user and a team
+        $user = User::factory()->create();
+        $team = Team::factory(["name" => "The same name"]) // The slug should auto. use increments "the-same-name-N"
+            ->hasAttached($user)
+            ->create();
+        $team2 = Team::factory(["name" => "The same name"]) // The slug should auto. use increments "the-same-name-N"
+            ->hasAttached($user)
+            ->create();
+
+        $this->assertNotEmpty($team->slug); //the-same-name
+        $this->assertNotEmpty($team2->slug); //the-same-name-2
+        $this->assertNotSame($team->slug, $team2->slug);
+
+        $response = $this
+            ->actingAs($user)
+            ->get('/teams/' . $team->slug);
+
+        $response->assertOk();
+    }
+
+    /**
      * Test the index pagination.
      *
      * @return void
@@ -231,7 +261,7 @@ class TeamTest extends TestCase
         $teamRole->save();
 
         // Send a DELETE request to the team deletion endpoint as the user
-        $response = $this->actingAs($user)->delete("/teams/{$team->id}");
+        $response = $this->actingAs($user)->delete("/teams/{$team->slug}");
 
         // Assert that the team was deleted and the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -239,7 +269,7 @@ class TeamTest extends TestCase
 
         // Send a DELETE request to the other team deletion endpoint as the user. It should return an error
         // because user has no permission
-        $response = $this->actingAs($user)->delete("/teams/{$otherTeam->id}");
+        $response = $this->actingAs($user)->delete("/teams/{$otherTeam->slug}");
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
     }
@@ -270,7 +300,7 @@ class TeamTest extends TestCase
 
 
         // Send a PATCH request to the team edit endpoint as the user
-        $response = $this->actingAs($user)->patch("/teams/{$team->id}", ["name" => $newName]);
+        $response = $this->actingAs($user)->patch("/teams/{$team->slug}", ["name" => $newName]);
 
         // Assert that the team was edited and the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -278,7 +308,7 @@ class TeamTest extends TestCase
 
         // Send a PATCH request to the team edit endpoint as the other user. It should return an error
         // because user has no permission
-        $response = $this->actingAs($user)->patch("/teams/{$otherTeam->id}", ["name" => $newName]);
+        $response = $this->actingAs($user)->patch("/teams/{$otherTeam->slug}", ["name" => $newName]);
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $otherTeam->id]);
         $this->assertDatabaseMissing('teams', ['id' => $otherTeam->id, 'name' => $newName]);
@@ -299,7 +329,7 @@ class TeamTest extends TestCase
         $secondUser = User::factory()->create();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -315,7 +345,7 @@ class TeamTest extends TestCase
 
 
         // Send a POST request to the team unjoin endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/unjoin");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/unjoin");
 
         // Assert that the second user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -345,7 +375,7 @@ class TeamTest extends TestCase
         $secondUser = User::factory()->create();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the user was given a 403, you need an invite to join
         $response->assertStatus(403);
@@ -360,7 +390,7 @@ class TeamTest extends TestCase
         $teamInvite->save();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the second user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -374,7 +404,7 @@ class TeamTest extends TestCase
 
 
         // Send a POST request to the team unjoin endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/unjoin");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/unjoin");
 
         // Assert that the second user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -406,7 +436,7 @@ class TeamTest extends TestCase
         $otherUser = User::factory()->create();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($otherUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($otherUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -417,7 +447,7 @@ class TeamTest extends TestCase
 
         // Send a PATCH request to the team edit endpoint as the otherUser. It should return an error because
         // the user is only a MEMBER
-        $response = $this->actingAs($otherUser)->patch("/teams/{$team->id}", ["name" => $newName]);
+        $response = $this->actingAs($otherUser)->patch("/teams/{$team->slug}", ["name" => $newName]);
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $team->id]);
         $this->assertDatabaseMissing('teams', ['id' => $team->id, 'name' => $newName]);
@@ -439,7 +469,7 @@ class TeamTest extends TestCase
         $otherUser = User::factory()->create();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($otherUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($otherUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -450,7 +480,7 @@ class TeamTest extends TestCase
 
         // Send a DELETE request to the team edit endpoint as the otherUser. It should return an error because
         // the user is only a MEMBER
-        $response = $this->actingAs($otherUser)->delete("/teams/{$team->id}");
+        $response = $this->actingAs($otherUser)->delete("/teams/{$team->slug}");
         $response->assertForbidden();
         $this->assertDatabaseHas('teams', ['id' => $team->id]);
     }
@@ -487,7 +517,7 @@ class TeamTest extends TestCase
         $teamRole->save();
 
         // Send a POST request to the team unjoin endpoint as the second user
-        $response = $this->actingAs($user)->post("/teams/{$team->id}/unjoin");
+        $response = $this->actingAs($user)->post("/teams/{$team->slug}/unjoin");
         $response->assertStatus(403);
         $user->refresh();
 
@@ -517,7 +547,7 @@ class TeamTest extends TestCase
         $secondUser = User::factory()->create();
 
         // Send a POST request to the team join endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/join");
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/join");
 
         // Assert that the user was redirected
         $response->assertSessionHasNoErrors()->assertRedirect();
@@ -531,13 +561,13 @@ class TeamTest extends TestCase
         $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
 
         // Send a POST request to the team add-role endpoint as the second user
-        $response = $this->actingAs($secondUser)->post("/teams/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
+        $response = $this->actingAs($secondUser)->post("/teams/{$team->slug}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
 
         // Assert this has failed. A MEMBER can't promote itself to ADMIN
         $this->assertEquals(0, TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
 
         // Send a POST request to the team add-role endpoint as the first user
-        $response = $this->actingAs($user)->post("/teams/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
+        $response = $this->actingAs($user)->post("/teams/{$team->slug}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
 
         // Assert this has succeeded. secondUser is now ADMIN
         $this->assertEquals(1, TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());

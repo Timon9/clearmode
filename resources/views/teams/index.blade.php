@@ -3,7 +3,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            <i class="fas fa-users mr-2"></i> {{ __('Teams') }}
+            {{ __('Teams') }}
         </h2>
     </x-slot>
 
@@ -41,7 +41,7 @@
                             <div class="border-b-2 px-4 py-4   mb-3">
 
                                 <div class="">
-                                    <a href="{{route('teams.show',$team->id)}}" class="font-bold text-blue-600 underline"> {{ ucfirst($team->name) }}</a>
+                                    <a href="{{route('teams.show',$team->slug)}}" class="font-bold text-blue-600 underline"> {{ ucfirst($team->name) }}</a>
                                     <!-- start: visibility -->
                                     @if ($team->public)
                                         <span
