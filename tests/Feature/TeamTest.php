@@ -38,7 +38,7 @@ class TeamTest extends TestCase
      *
      * @return void
      */
-    public function testIndexPagination()
+    public function testIndexResultsUsePagination()
     {
         // Create a user and 30 teams
         $user = User::factory()->create();
@@ -81,7 +81,7 @@ class TeamTest extends TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testYouCanSearchTeams()
     {
         // Create a user and some teams
         $user = User::factory()->create();
