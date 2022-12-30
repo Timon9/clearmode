@@ -50,13 +50,44 @@ class User extends Authenticatable
         return $this->belongsToMany(Team::class);
     }
 
-    public function getAvatarAttribute():string
+    public function getInitialsAttribute()
     {
-        $initials = 'AB';
+        // Split the name into an array of words
+        $words = explode(' ', $this->name);
+
+        // Initialize the initials variable
+        $initials = '';
+
+        // Initialize the counter variable
+        $counter = 0;
+
+        // Loop through each word
+        foreach ($words as $word) {
+            // Increment the counter
+            $counter++;
+
+            // Get the first letter of the word and add it to the initials string
+            $initials .= strtoupper(substr($word, 0, 1));
+
+            // If the counter is equal to 2, break out of the loop
+            if ($counter == 2) {
+                break;
+            }
+        }
+
+        // Return the initials
+        return $initials;
+    }
+
+
+
+    public function getAvatarAttribute(): string
+    {
+        $initials = $this->getInitialsAttribute();
         $width = 40;
         $height = 40;
         $fontPath = public_path('fonts/Nunito/Nunito-Regular.ttf');
-       // $fontPath = 5;  // Use an internal GD font
+        // $fontPath = 5;  // Use an internal GD font
 
         $size = 25;
         $color = '#ffffff';
@@ -91,11 +122,11 @@ class User extends Authenticatable
 
         // Calculate the font size and position
         $fontSize = $size * 0.8;
-        $x = ($width - $fontSize ) ;
+        $x = ($width - $fontSize);
         $y = ($height - $fontSize) + 1;
 
         // Add the initials to the image
-        $image->text($initials, $x, $y, function ($font) use ($fontSize, $color,$fontPath) {
+        $image->text($initials, $x, $y, function ($font) use ($fontSize, $color, $fontPath) {
             $font->file($fontPath);
             $font->size($fontSize);
             $font->color($color);
