@@ -41,14 +41,14 @@
                                         {{ $team->created_at->diffForHumans() }}
                                     </div>
                                     <div class="text-sm leading-5 text-gray-500">
-                                        12 members
+                                        {{$team->users->count()}} @choice('member|members', $team->users->count())
                                     </div>
 
                                     <!-- Start: Team members -->
                                     <div class="flex flex-wrap w-400">
                                         @foreach ($team->users as $user)
                                         <div class="mr-2">
-                                            <img src="{{$user->avatar}}" alt="{{ $user->name }}" class="w-10 h-10 rounded-full">
+                                            <img src="{{$user->avatar(36,36,23)}}" alt="{{ $user->name }}" class="w-9 h-9 rounded-full">
                                         </div>
                                         @endforeach
                                     </div>

@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Response;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Cache;
 use Laravel\Sanctum\HasApiTokens;
 use Intervention\Image\Facades\Image;
 use Intervention\Image\Image as InterventionImage;
@@ -75,31 +76,56 @@ class User extends Authenticatable
             }
         }
 
+        // If we have only one word, use the second letter of the word
+        if ($counter !== 2) {
+            $initials .= substr($words[0], 1, 1);
+        }
+
         // Return the initials
         return $initials;
     }
 
 
 
-    public function getAvatarAttribute(): string
+    /**
+     * Generate a profile avatar image based on the user's initials.
+     *
+     * @param int $width The width of the avatar image in pixels (default: 40).
+     * @param int $height The height of the avatar image in pixels (default: 40).
+     * @param int $size The font size (default: 25).
+     * @return string The avatar image as a base64 string.
+     */
+    public function avatar(int $width = 40, int $height = 40, int $size = 25): string
     {
+        // Get the user's initials
         $initials = $this->getInitialsAttribute();
-        $width = 40;
-        $height = 40;
+
+        // Set the path to the font file
         $fontPath = public_path('fonts/Nunito/Nunito-Regular.ttf');
-        // $fontPath = 5;  // Use an internal GD font
 
-        $size = 25;
-        $color = '#ffffff';
-        $background = '#336699';
+        // Set the font size, color, and background color for the initials
+        $color = '#000000';
+        $background = '#c9d7e8';
 
-        $image = $this->generateInitialsImage($initials, $width, $height, $fontPath, $size, $color, $background);
+        // Check the cache for a previously generated image
+        $key = "avatar-".$this->id."-".$width."x".$height."-".$size;
+        $base64 = Cache::get($key);
+        if ($base64 === null) {
+            // Generate the initials image
+            $image = $this->generateInitialsImage($initials, $width, $height, $fontPath, $size, $color, $background);
 
-        $base64 = (string) $image->encode('data-url');
+            // Encode the image as a base64 string
+            $base64 = (string) $image->encode('data-url');
 
-        // Output the image to the browser
+            // Cache the image for future requests
+            Cache::put($key, $base64, now()->addMinutes(60));
+        }
+
+        // Return the base64 string
         return $base64;
     }
+
+
 
 
     /**
@@ -121,9 +147,10 @@ class User extends Authenticatable
         $image = Image::canvas($width, $height, $background);
 
         // Calculate the font size and position
+        // Calculate the font size and position
         $fontSize = $size * 0.8;
-        $x = ($width - $fontSize);
-        $y = ($height - $fontSize) + 1;
+        $x = $width / 2;
+        $y = $height / 2;
 
         // Add the initials to the image
         $image->text($initials, $x, $y, function ($font) use ($fontSize, $color, $fontPath) {
