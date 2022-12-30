@@ -13,7 +13,7 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
 
-                    <!-- Toolbar -->
+                    <!-- Start: Toolbar -->
                     <div class="border-b-2 py-4">
                         <!-- Start: Search -->
                         <form action="{{ route('teams.index') }}" method="GET" class="flex items-center mb-4">
@@ -33,6 +33,7 @@
                         </x-primary-link>
 
                     </div>
+                    <!-- End: Toolbar -->
 
                     <!-- List of teams -->
                     <div class="mt-3">
