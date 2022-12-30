@@ -22,18 +22,18 @@ class TeamTest extends TestCase
      * @return void
      */
 
-     public function test_team_index_is_displayed()
-     {
-         $user = User::factory()->create();
+    public function test_team_index_is_displayed()
+    {
+        $user = User::factory()->create();
 
-         $response = $this
-             ->actingAs($user)
-             ->get('/teams');
+        $response = $this
+            ->actingAs($user)
+            ->get('/teams');
 
-         $response->assertOk();
-     }
+        $response->assertOk();
+    }
 
-     /**
+    /**
      * Test the index pagination.
      *
      * @return void
@@ -41,11 +41,11 @@ class TeamTest extends TestCase
     public function testIndexPagination()
     {
         // Create a user and 30 teams
-         $user = User::factory()->create();
-         Team::factory()
-         ->count(30)
-         ->hasAttached($user)
-         ->create();
+        $user = User::factory()->create();
+        Team::factory()
+            ->count(30)
+            ->hasAttached($user)
+            ->create();
 
         // Send a GET request to the index page
         $response = $this->actingAs($user)->get('/teams');
@@ -76,23 +76,55 @@ class TeamTest extends TestCase
         $this->assertEquals(2, $teams->lastPage());
     }
 
+    /**
+     * Test the index search.
+     *
+     * @return void
+     */
+    public function testSearch()
+    {
+        // Create a user and some teams
+        $user = User::factory()->create();
+        $teams = Team::factory()
+            ->count(5)
+            ->hasAttached($user)
+            ->create();
 
-     /**
+
+        // Set the search query to the name of one of the teams
+        $search = $teams[0]->name;
+
+        // Send a GET request to the search route with the search query
+        $response = $this->actingAs($user)->get("/teams?search={$search}");
+
+        // Assert that the response contains the correct data
+        $response->assertOk()
+            ->assertSee($search);
+
+        // Send a GET request to the search route with a random query
+        $response = $this->actingAs($user)->get("/teams?search=" . $this->faker()->uuid());
+
+        // Assert that the response is not containing the team
+        $response->assertOk()
+            ->assertDontSee($search);
+    }
+
+    /**
      * Test if the teams/create is displayed
      *
      * @return void
      */
 
-     public function test_team_create_is_displayed()
-     {
-         $user = User::factory()->create();
+    public function test_team_create_is_displayed()
+    {
+        $user = User::factory()->create();
 
-         $response = $this
-             ->actingAs($user)
-             ->get('/teams/create');
+        $response = $this
+            ->actingAs($user)
+            ->get('/teams/create');
 
-         $response->assertOk();
-     }
+        $response->assertOk();
+    }
 
 
     /**
@@ -109,7 +141,7 @@ class TeamTest extends TestCase
         // Send a POST request to the team creation endpoint as the user
         $response = $this->actingAs($user)->post('/teams', [
             'name' => $teamName,
-            'visibility'=>'public',
+            'visibility' => 'public',
         ]);
 
         // Assert that there are no validation errors and that the user was redirected
@@ -135,7 +167,7 @@ class TeamTest extends TestCase
         // Send a POST request to the team creation endpoint as the user
         $response = $this->actingAs($user)->post('/teams', [
             'name' => $teamName,
-            'visibility'=>'private',
+            'visibility' => 'private',
         ]);
 
         // Assert that there are no validation errors and that the user was redirected
@@ -261,7 +293,7 @@ class TeamTest extends TestCase
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(["public"=>true]);
+        $team = Team::factory()->create(["public" => true]);
         $user->teams()->attach([$team->id]);
 
         $secondUser = User::factory()->create();
@@ -298,7 +330,7 @@ class TeamTest extends TestCase
         $this->assertEmpty($teamRole);
     }
 
-     /**
+    /**
      * Test if a user can join a private team with an invite only.
      *
      * @return void
@@ -335,7 +367,7 @@ class TeamTest extends TestCase
 
 
 
-         $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
+        $teamRole = TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id])->firstOrFail();
 
         // Assert that the user is member of the team with an MEMBER role
         $this->assertEquals(TeamRoleEnum::MEMBER->value, $teamRole->role);
@@ -368,7 +400,7 @@ class TeamTest extends TestCase
 
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(["public"=>true]);
+        $team = Team::factory()->create(["public" => true]);
         $user->teams()->attach([$team->id]);
 
         $otherUser = User::factory()->create();
@@ -401,7 +433,7 @@ class TeamTest extends TestCase
 
         // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(["public"=>true]);
+        $team = Team::factory()->create(["public" => true]);
         $user->teams()->attach([$team->id]);
 
         $otherUser = User::factory()->create();
@@ -472,7 +504,7 @@ class TeamTest extends TestCase
     {
         // // Create a user and a team owned by the user
         $user = User::factory()->create();
-        $team = Team::factory()->create(["public"=>true]);
+        $team = Team::factory()->create(["public" => true]);
         $user->teams()->attach([$team->id]);
 
         // Make user admin
@@ -508,6 +540,6 @@ class TeamTest extends TestCase
         $response = $this->actingAs($user)->post("/teams/{$team->id}/role", ['user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value]);
 
         // Assert this has succeeded. secondUser is now ADMIN
-        $this->assertEquals(1,TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
+        $this->assertEquals(1, TeamRole::where(['team_id' => $team->id, 'user_id' => $secondUser->id, 'role' => TeamRoleEnum::ADMIN->value])->count());
     }
 }

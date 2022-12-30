@@ -19,11 +19,22 @@ class TeamController extends Controller
     public function index(Request $request)
     {
         // Get the user's teams, limited to 25 per page
-        $teams = $request->user()->teams()->paginate(25);
+        $teams = $request->user()->teams();
+
+        // Check if the search query is present in the request
+        if ($request->has('search')) {
+            $search = $request->input('search');
+
+            // Apply the search query to the teams query
+            $teams = $teams->where('name', 'like', "%{$search}%");
+        }
+
+        $teams = $teams->paginate(25);
 
         return view('teams.index', [
             'user' => $request->user(),
             'teams' => $teams,
+            'search' => $search ?? "",
         ]);
     }
 
@@ -37,7 +48,6 @@ class TeamController extends Controller
         return view('teams.create', [
             'user' => $request->user(),
         ]);
-
     }
 
     /**
@@ -160,7 +170,7 @@ class TeamController extends Controller
         return Redirect::route('teams.index');
     }
 
-     /**
+    /**
      * Give or role to a team member
      *
      * @param  \App\Models\Team  $team

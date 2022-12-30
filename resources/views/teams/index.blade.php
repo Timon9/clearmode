@@ -12,6 +12,16 @@
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 text-gray-900">
+                    <!-- Start: Search -->
+                    <form action="{{ route('teams.index') }}" method="GET" class="flex items-center mb-4">
+                        <x-text-input id="search" class="block mt-1 w-full" type="text" name="search" placeholder="Search teams..." :value="$search"  />
+                        <x-button>
+                            Search
+                        </x-button>
+                    </form>
+
+                    <!-- End: Search -->
+
                     <x-primary-link href="{{ route('teams.create') }}">
                         <i class="fas fa-plus mr-2"></i>{{ __('New team') }}
                     </x-primary-link>
