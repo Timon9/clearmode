@@ -3,7 +3,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Teams') }}
+            <i class="fas fa-users mr-2"></i> {{ __('Teams') }}
         </h2>
     </x-slot>
 
@@ -38,9 +38,10 @@
                     <!-- List of teams -->
                     <div class="mt-3">
                         @foreach ($teams as $team)
-                            <div class="border-b-2 py-4">
+                            <div class="border-b-2 px-4 py-4   mb-3">
+
                                 <div class="">
-                                    <strong class="font-bold"> {{ ucfirst($team->name) }}</strong>
+                                    <a href="{{route('teams.show',$team->id)}}" class="font-bold text-blue-600 underline"> {{ ucfirst($team->name) }}</a>
                                     <!-- start: visibility -->
                                     @if ($team->public)
                                         <span
@@ -57,27 +58,27 @@
                                     @endif
                                     <!-- end: visibility -->
 
-                                    <div class="text-sm leading-5 text-gray-500">
-                                        {{ $team->created_at->diffForHumans() }}
+                                    <div class="px-2 py-2">
+                                        <div class="text-sm leading-5 text-gray-500">
+                                            <i class="fas fa-calendar mr-1"></i>
+                                            {{ $team->created_at->diffForHumans() }}
+                                        </div>
+                                        <div class="text-sm leading-5 text-gray-500">
+                                            <i class="fas fa-users mr-1"></i>
+                                            {{ $team->users->count() }} @choice('member|members', $team->users->count())
+                                        </div>
+
+                                        <!-- Start: Team members -->
+                                        <div class="flex flex-wrap w-400 mt-3">
+                                            @foreach ($team->users as $user)
+                                                <div class="mr-2">
+                                                    <img src="{{ $user->avatar(36, 36, 23) }}"
+                                                        alt="{{ $user->name }}" class="w-7 h-7 rounded-full">
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                        <!-- End: Team members -->
                                     </div>
-                                    <div class="text-sm leading-5 text-gray-500">
-                                        {{ $team->users->count() }} @choice('member|members', $team->users->count())
-                                    </div>
-
-                                    <!-- Start: Team members -->
-                                    <div class="flex flex-wrap w-400">
-                                        @foreach ($team->users as $user)
-                                            <div class="mr-2">
-                                                <img src="{{ $user->avatar(36, 36, 23) }}" alt="{{ $user->name }}"
-                                                    class="w-9 h-9 rounded-full">
-                                            </div>
-                                        @endforeach
-                                    </div>
-
-
-
-
-                                    <!-- End: Team members -->
 
                                 </div>
                             </div>
