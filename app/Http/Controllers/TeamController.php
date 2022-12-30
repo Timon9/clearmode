@@ -18,8 +18,8 @@ class TeamController extends Controller
      */
     public function index(Request $request)
     {
-        // Get the user's teams, limited to 5 per page
-        $teams = $request->user()->teams()->paginate(5);
+        // Get the user's teams, limited to 25 per page
+        $teams = $request->user()->teams()->paginate(25);
 
         return view('teams.index', [
             'user' => $request->user(),

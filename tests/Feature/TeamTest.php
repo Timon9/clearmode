@@ -34,6 +34,50 @@ class TeamTest extends TestCase
      }
 
      /**
+     * Test the index pagination.
+     *
+     * @return void
+     */
+    public function testIndexPagination()
+    {
+        // Create a user and 30 teams
+         $user = User::factory()->create();
+         Team::factory()
+         ->count(30)
+         ->hasAttached($user)
+         ->create();
+
+        // Send a GET request to the index page
+        $response = $this->actingAs($user)->get('/teams');
+
+        // Assert that the response is successful
+        $response->assertSuccessful();
+
+        // Assert that the first page of teams is displayed
+        $response->assertViewIs('teams.index');
+        $response->assertViewHas('teams');
+        $teams = $response->viewData('teams');
+        $this->assertEquals(25, $teams->count());
+        $this->assertEquals(1, $teams->currentPage());
+        $this->assertEquals(30, $teams->total());
+        $this->assertEquals(2, $teams->lastPage());
+
+        // Send a GET request to the second page
+        $response = $this->actingAs($user)->get('/teams?page=2');
+
+        // Assert that the second page of teams is displayed
+        $response->assertSuccessful();
+        $response->assertViewIs('teams.index');
+        $response->assertViewHas('teams');
+        $teams = $response->viewData('teams');
+        $this->assertEquals(5, $teams->count());
+        $this->assertEquals(2, $teams->currentPage());
+        $this->assertEquals(30, $teams->total());
+        $this->assertEquals(2, $teams->lastPage());
+    }
+
+
+     /**
      * Test if the teams/create is displayed
      *
      * @return void
