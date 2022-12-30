@@ -20,6 +20,7 @@ class TeamController extends Controller
     {
         return view('teams.index', [
             'user' => $request->user(),
+            'teams' =>$request->user()->teams,
         ]);
     }
 
