@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\TeamController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
@@ -35,34 +36,14 @@ Route::middleware('auth')->group(function () {
 
     // Teams
     Route::resource('teams', TeamController::class);
-    Route::post('/teams/{team}/join', [TeamController::class,'join']);
-    Route::post('/teams/{team}/unjoin', [TeamController::class,'unjoin']);
-    Route::post('/teams/{team}/role', [TeamController::class,'role']);
-
+    Route::post('/teams/{team}/join', [TeamController::class, 'join']);
+    Route::post('/teams/{team}/unjoin', [TeamController::class, 'unjoin']);
+    Route::post('/teams/{team}/role', [TeamController::class, 'role']);
 });
 
 
-Route::get('/auth/redirect', function () {
-    return Socialite::driver('google')->redirect();
-})->name('socialite-redirect');
+// Sociallite routes
+Route::get('/auth/redirect', [SocialiteController::class, "googleRedirect"])->name('socialite-google-redirect');
+Route::get('/auth/callback', [SocialiteController::class, "googleCallback"])->name('socialite-google-callback');
 
-Route::get('/auth/callback', function () {
-    $googleUser = Socialite::driver('google')->user();
-
-    Log::info("[Socialite] Logged in using Google #".$googleUser->id);
-
-    $user = User::updateOrCreate([
-        'google_id' => $googleUser->id,
-    ], [
-        'name' => $googleUser->name,
-        'email' => $googleUser->email,
-        'github_token' => $googleUser->token,
-        'github_refresh_token' => $googleUser->refreshToken,
-    ]);
-
-    Auth::login($user);
-
-    return redirect('/dashboard');
-});
-
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
