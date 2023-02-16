@@ -13,14 +13,8 @@ return new class extends Migration
      */
     public function up()
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password')->nullable();
-            $table->rememberToken();
-            $table->timestamps();
+        Schema::table('users', function (Blueprint $table) {
+            $table->string('google_id')->nullable()->index(); // Google ID's are to big for BigInt
         });
     }
 
@@ -31,6 +25,8 @@ return new class extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('users');
+        Schema::table('users',function(Blueprint $table){
+            $table->removeColumn('google_id');
+        });
     }
 };

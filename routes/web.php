@@ -51,16 +51,16 @@ Route::get('/auth/callback', function () {
 
     Log::info("[Socialite] Logged in using Google #".$googleUser->id);
 
-    // $user = User::updateOrCreate([
-    //     'googleUser' => $googleUser->id,
-    // ], [
-    //     'name' => $googleUser->name,
-    //     'email' => $googleUser->email,
-    //     'github_token' => $googleUser->token,
-    //     'github_refresh_token' => $googleUser->refreshToken,
-    // ]);
+    $user = User::updateOrCreate([
+        'google_id' => $googleUser->id,
+    ], [
+        'name' => $googleUser->name,
+        'email' => $googleUser->email,
+        'github_token' => $googleUser->token,
+        'github_refresh_token' => $googleUser->refreshToken,
+    ]);
 
-    // Auth::login($user);
+    Auth::login($user);
 
     return redirect('/dashboard');
 });
