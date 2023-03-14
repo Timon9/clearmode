@@ -21,12 +21,8 @@ class PostTestCase extends TestCase
      */
     public function test_post_model_has_a_title_attribute()
     {
-        // Arrange
-        $title = $this->faker->sentence();
-        // Act
-        $this->model->title = $title;
-        // Assert
-        $this->assertEquals($title, $this->model->title);
+        $fillable = $this->model->getFillable();
+        $this->assertContains('title', $fillable);
     }
 
     /**

@@ -16,19 +16,15 @@ class ImagePostTest extends PostTestCase
      *
      * You can add ImagePost specific unit test below.
      */
-        /**
+
+     /**
      * Test if we can add an image URL
      *
      * @return void
      */
     public function test_image_post_have_url_attribute()
     {
-        // Arrange
-        $url = $this->faker->imageUrl();
-        // Act
-        $this->model->url = $url;
-        // Assert
-        $this->assertEquals($url, $this->model->url);
+        $fillable = $this->model->getFillable();
+        $this->assertContains('url', $fillable);
     }
-
 }
