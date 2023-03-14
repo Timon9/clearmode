@@ -3,14 +3,16 @@
 namespace Tests\Unit;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
+use Illuminate\Support\Str;
 
 class PostTestCase extends TestCase
 {
     protected Model $model;
 
-    use WithFaker;
+    use WithFaker, DatabaseMigrations;
 
     /**
      * Test if we can set a title
@@ -25,6 +27,21 @@ class PostTestCase extends TestCase
         $this->model->title = $title;
         // Assert
         $this->assertEquals($title, $this->model->title);
+    }
+
+    /**
+     * Test if we can set a slug automaticly
+     *
+     * @return void
+     */
+    public function test_post_model_has_a_slug_created_automaticly()
+    {
+        // Arrange
+        $title = $this->faker->sentence();
+        // Act
+        $this->model->title = $title;
+        // Assert: We expect the slug to be created automaticly.
+        $this->assertEquals(Str::slug($title), $this->model->slug);
     }
 
 }

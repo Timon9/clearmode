@@ -2,15 +2,15 @@
 
 namespace App\Models;
 
+use App\Traits\Slugable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Str;
 
 
 
 class Team extends Model
 {
-    use HasFactory;
+    use HasFactory, Slugable;
 
     /**
      * The attributes that are mass assignable.
@@ -51,12 +51,8 @@ class Team extends Model
     public function setNameAttribute(string $value)
     {
         $this->attributes['name'] = $value;
+
         // Generate a unique slug
-        $slug = Str::slug($value);
-        $i = static::where('slug', 'like', "$slug%")->count();
-        if ($i > 0) {
-            $slug .= "-".($i+1);
-        }
-        $this->attributes['slug'] = $slug;
+        $this->attributes['slug'] = $this->createSlug($value);
     }
 }
