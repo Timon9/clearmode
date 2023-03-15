@@ -37,7 +37,7 @@ class SlugableTest extends TestCase
     }
 
 
-     /**
+    /**
      * Test if we can create a slug that increments when a duplicate slug is found
      *
      * @return void
@@ -61,6 +61,11 @@ class SlugableTest extends TestCase
 
     }
 
+    /**
+     * Test if the slugs are valid URLS
+     *
+     * @return void
+     */
     public function test_slugs_should_be_valid_urls(){
         $mockedResponse = $this->mock(stdClass::class,function(MockInterface $mockInterface){
             $mockInterface->expects("count")->once()->andReturn(0);
