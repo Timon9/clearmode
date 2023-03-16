@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\TeamController;
 use App\Models\User;
+use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Route;
@@ -39,6 +40,13 @@ Route::middleware('auth')->group(function () {
     Route::post('/teams/{team}/join', [TeamController::class, 'join']);
     Route::post('/teams/{team}/unjoin', [TeamController::class, 'unjoin']);
     Route::post('/teams/{team}/role', [TeamController::class, 'role']);
+});
+
+// Public user account and posts.
+Route::prefix('@{user}')->group(function () {
+    Route::get('/i/{imagePost}', function () {
+        return new Response("ok");
+    });
 });
 
 

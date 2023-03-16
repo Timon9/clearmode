@@ -3,6 +3,8 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+
+use App\Traits\Slugable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Http\Response;
@@ -14,7 +16,7 @@ use Intervention\Image\Image as InterventionImage;
 
 class User extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory, Notifiable, Slugable;
 
     /**
      * The attributes that are mass assignable.
@@ -26,6 +28,7 @@ class User extends Authenticatable
         'email',
         'password',
         'google_id',
+        'slug',
     ];
 
     /**
@@ -46,6 +49,7 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
         'google_id' => 'integer',
+        'slug' => 'string',
     ];
 
     public function teams()
@@ -164,5 +168,19 @@ class User extends Authenticatable
         });
 
         return $image;
+    }
+
+    /**
+     * Set the slug attribute when adding the name.
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setNameAttribute(string $value)
+    {
+        $this->attributes['name'] = $value;
+
+        // Generate a unique slug
+        $this->attributes['slug'] = $this->createSlug($value);
     }
 }
