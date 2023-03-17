@@ -53,6 +53,8 @@ Route::prefix('@{userSlug}')->group(function () {
     Route::get('/img/{imageId}/{imagePostSlug}',[ImagePostController::class,'show']);
 });
 
+// Media
+Route::get('/media/img/{path}',[ImagePostController::class,'getImageFile']);
 
 // Sociallite routes
 Route::get('/auth/redirect', [SocialiteController::class, "googleRedirect"])->name('socialite-google-redirect');

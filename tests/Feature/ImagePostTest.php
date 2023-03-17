@@ -56,7 +56,7 @@ class ImagePostTest extends TestCase
         $user = User::factory()->create();
         $this->actingAs($user);
 
-        // Storage::fake();
+        Storage::fake();
 
         $fakeTitle = $this->faker()->uuid(); // Use uuidv4 to be sure the title is unique
         $this->post("/posts/image",[
@@ -68,9 +68,42 @@ class ImagePostTest extends TestCase
             'title'=>$fakeTitle
         ]);
 
+        // Test if the uploaded image file is accessible via the url
         $imagePost = ImagePost::where(["title"=>$fakeTitle])->firstOrFail();
-dump($imagePost->url);
         $this->get($imagePost->url)->assertOk();
+
+    }
+
+    /**
+     * Test if we can access the image post form
+     *
+     * @return void
+     */
+    public function test_image_post_form_is_accessible(){
+
+        // Test if get a redirect if not logged in
+        $this->get("/post/image")->assertRedirect();
+
+        $user = User::factory()->create();
+        $this->actingAs($user);
+
+        $this->get("/post/image")->assertOk();
+    }
+
+    public function test_cant_create_image_post_if_not_logged_in(){
+        $fakeTitle = $this->faker()->uuid(); // Use uuidv4 to be sure the title is unique
+
+        Storage::fake(); // It should't upload files, but just to be sure.
+
+        $this->post("/posts/image",[
+            "title"=>$fakeTitle,
+            "image_file"=>UploadedFile::fake()->image("file.jpg",80,80)
+        ])->assertRedirect();
+
+        $this->assertDatabaseMissing("image_posts",[
+            'title'=>$fakeTitle
+        ]);
+
 
     }
 

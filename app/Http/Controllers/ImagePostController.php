@@ -7,6 +7,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ImagePostController extends Controller
 {
@@ -21,7 +22,7 @@ class ImagePostController extends Controller
      *
      * @return View
      */
-    public function show(string $userSlug, string $imagePostId, string $imagePostSlug, Request $request):View
+    public function show(string $userSlug, string $imagePostId, string $imagePostSlug, Request $request): View
     {
         $imagePost = ImagePost::findOrFail($imagePostId);
 
@@ -37,11 +38,15 @@ class ImagePostController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request):Response{
+    public function create(Request $request): Response
+    {
 
-        $user = Auth::user();
+        // $user = Auth::user();
+
         $imageFile = $request->file('image_file');
-        $url=$imageFile->storePublicly($user->slug."/img");
+        $filePath = $imageFile->storePublicly("img"); // Internal storage path
+
+        $url = "/media/".$filePath; // Publicly accessible url
 
         $imagePost = new ImagePost();
         $imagePost->title = $request->title;
@@ -49,5 +54,29 @@ class ImagePostController extends Controller
         $imagePost->save();
 
         return new Response();
+    }
+
+    /**
+     * Retrieve the uploaded image
+     *
+     * @param string $path
+     * @return Response
+     */
+    public function getImageFile(string $path)
+    {
+        $path = "img/".$path; // Prefix the image subdirectory
+
+        if (!Storage::exists($path)) {
+            abort(404);
+        }
+
+        $file = Storage::get($path);
+
+        $headers = [
+            'Content-Type' => Storage::mimeType($path),
+            'Content-Length' => Storage::size($path),
+        ];
+
+        return response()->make($file, 200, $headers);
     }
 }
