@@ -42,11 +42,15 @@ Route::middleware('auth')->group(function () {
     Route::post('/teams/{team}/join', [TeamController::class, 'join']);
     Route::post('/teams/{team}/unjoin', [TeamController::class, 'unjoin']);
     Route::post('/teams/{team}/role', [TeamController::class, 'role']);
+
+    // Posts
+    Route::post('/posts/image',[ImagePostController::class,'create']);
+
 });
 
 // Public user account and posts.
 Route::prefix('@{userSlug}')->group(function () {
-    Route::get('/i/{imagePostSlug}',[ImagePostController::class,'show']);
+    Route::get('/img/{imageId}/{imagePostSlug}',[ImagePostController::class,'show']);
 });
 
 

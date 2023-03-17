@@ -18,6 +18,7 @@ class ImagePost extends Model
     protected $fillable = [
         'title',
         'url',
+        'slug',
     ];
 
      /**
@@ -28,6 +29,7 @@ class ImagePost extends Model
     protected $casts = [
         'title' => 'string',
         'url' => 'string',
+        'slug' => 'string',
     ];
 
      /**
@@ -39,8 +41,9 @@ class ImagePost extends Model
     public function setTitleAttribute(string $value)
     {
         $this->attributes['title'] = $value;
-
         // Generate a unique slug
         $this->attributes['slug'] = $this->createSlug($value);
     }
+
+
 }
