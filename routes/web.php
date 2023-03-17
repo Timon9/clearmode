@@ -1,8 +1,10 @@
 <?php
 
+use App\Http\Controllers\ImagePostController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SocialiteController;
 use App\Http\Controllers\TeamController;
+use App\Models\ImagePost;
 use App\Models\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
@@ -43,10 +45,8 @@ Route::middleware('auth')->group(function () {
 });
 
 // Public user account and posts.
-Route::prefix('@{user}')->group(function () {
-    Route::get('/i/{imagePost}', function () {
-        return new Response("ok");
-    });
+Route::prefix('@{userSlug}')->group(function () {
+    Route::get('/i/{imagePostSlug}',[ImagePostController::class,'show']);
 });
 
 
