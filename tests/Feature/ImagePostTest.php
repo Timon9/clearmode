@@ -25,7 +25,7 @@ class ImagePostTest extends TestCase
         $response->assertStatus(200);
     }
     /**
-     * Test if we can view a ImagePost
+     * Test if we can view a ImagePost title
      *
      * @return void
      */
@@ -36,4 +36,18 @@ class ImagePostTest extends TestCase
         $response = $this->get('@'.$user->slug.'/i/'. $imagePost->slug);
         $response->assertOk()->assertSeeText($imagePost->title);
     }
+
+        /**
+     * Test if we can view a ImagePost
+     *
+     * @return void
+     */
+    public function test_image_post_contains_image_url()
+    {
+        $imagePost = ImagePost::factory()->create();
+        $user = User::factory()->create();
+        $response = $this->get('@'.$user->slug.'/i/'. $imagePost->slug);
+        $response->assertOk()->assertSee($imagePost->url);
+    }
+
 }
