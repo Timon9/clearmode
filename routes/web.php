@@ -44,7 +44,8 @@ Route::middleware('auth')->group(function () {
     Route::post('/teams/{team}/role', [TeamController::class, 'role']);
 
     // Posts
-    Route::post('/posts/image',[ImagePostController::class,'create']);
+    Route::get('/posts/image/create',[ImagePostController::class,'create'])->name('imagepost.create');
+    Route::post('/posts/image/store',[ImagePostController::class,'store'])->name('imagepost.store');
 
 });
 

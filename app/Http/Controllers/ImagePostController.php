@@ -33,12 +33,30 @@ class ImagePostController extends Controller
     }
 
     /**
+     * Display the create form.
+     *
+     * @param  string  $userSlug
+     * @param  string  $imagePostId
+     * @param  string  $imagePostSlug
+     * @param Request $request
+     *
+     * @return View
+     */
+    public function create(Request $request): View
+    {
+        return view('image-post.create', [
+            'user' => $request->user(),
+        ]);
+    }
+
+
+    /**
      * Create new ImagePost
      *
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request): Response
+    public function store(Request $request): Response
     {
 
         // $user = Auth::user();
@@ -46,7 +64,7 @@ class ImagePostController extends Controller
         $imageFile = $request->file('image_file');
         $filePath = $imageFile->storePublicly("img"); // Internal storage path
 
-        $url = "/media/".$filePath; // Publicly accessible url
+        $url = "/media/" . $filePath; // Publicly accessible url
 
         $imagePost = new ImagePost();
         $imagePost->title = $request->title;
@@ -54,6 +72,8 @@ class ImagePostController extends Controller
         $imagePost->save();
 
         return new Response();
+        //         return Redirect::route('image_post');
+
     }
 
     /**
@@ -64,7 +84,7 @@ class ImagePostController extends Controller
      */
     public function getImageFile(string $path)
     {
-        $path = "img/".$path; // Prefix the image subdirectory
+        $path = "img/" . $path; // Prefix the image subdirectory
 
         if (!Storage::exists($path)) {
             abort(404);
