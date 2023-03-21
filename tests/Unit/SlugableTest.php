@@ -32,7 +32,7 @@ class SlugableTest extends TestCase
         });
 
         $name = $this->faker->name();
-        $this->assertEquals(Str::slug($name),$mock->createSlug($name));
+        $this->assertEquals(Str::slug($name),$mock->createUniqueSlug($name));
 
     }
 
@@ -57,7 +57,7 @@ class SlugableTest extends TestCase
         });
 
         $name = $this->faker->name();
-        $this->assertEquals(Str::slug($name)."-".(++$count),$mock->createSlug($name));
+        $this->assertEquals(Str::slug($name)."-".(++$count),$mock->createUniqueSlug($name));
 
     }
 
@@ -78,7 +78,7 @@ class SlugableTest extends TestCase
             $mockInterface->expects('where')->once()->andReturn($mockedResponse);
         });
 
-        $slug = $mock->createSlug($this->faker->name());
+        $slug = $mock->createUniqueSlug($this->faker->name());
         $this->assertMatchesRegularExpression('/^[a-zA-Z0-9\-_]{2,}$/',$slug);
     }
 }

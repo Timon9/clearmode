@@ -181,6 +181,6 @@ class User extends Authenticatable
         $this->attributes['name'] = $value;
 
         // Generate a unique slug
-        $this->attributes['slug'] = $this->createSlug($value);
+        $this->attributes['slug'] = $this->createUniqueSlug($value);
     }
 }

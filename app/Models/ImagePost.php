@@ -42,7 +42,7 @@ class ImagePost extends Model
     {
         $this->attributes['title'] = $value;
         // Generate a unique slug
-        $this->attributes['slug'] = $this->createSlug($value);
+        $this->attributes['slug'] = $this->createUniqueSlug($value);
     }
 
 

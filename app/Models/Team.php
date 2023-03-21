@@ -53,6 +53,6 @@ class Team extends Model
         $this->attributes['name'] = $value;
 
         // Generate a unique slug
-        $this->attributes['slug'] = $this->createSlug($value);
+        $this->attributes['slug'] = $this->createUniqueSlug($value);
     }
 }

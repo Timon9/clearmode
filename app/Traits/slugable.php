@@ -12,9 +12,9 @@ Trait Slugable{
      * @param string $name
      * @return string
      */
-    function createSlug(string $name):string{
+    function createUniqueSlug(string $name,string $slugField = 'slug'):string{
         $slug = Str::slug($name);
-        $i = static::where('slug', 'like', $slug."%")->count();
+        $i = static::where($slugField, 'like', $slug."%")->count();
         if ($i > 0) {
             $slug .= "-".($i+1);
         }
