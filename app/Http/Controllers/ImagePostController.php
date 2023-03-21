@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\ImagePost;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 
 class ImagePostController extends Controller
@@ -56,10 +58,10 @@ class ImagePostController extends Controller
      * @param Request $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request): Response
+    public function store(Request $request): RedirectResponse
     {
 
-        // $user = Auth::user();
+         $user = Auth::user();
 
         $imageFile = $request->file('image_file');
         $filePath = $imageFile->storePublicly("img"); // Internal storage path
@@ -71,8 +73,11 @@ class ImagePostController extends Controller
         $imagePost->url = $url;
         $imagePost->save();
 
-        return new Response();
-        //         return Redirect::route('image_post');
+        return Redirect::route('imagepost.show',[
+            'userSlug'=>$user->slug,
+            'imageId'=>$imagePost->id,
+            'imagePostSlug'=>$imagePost->slug,
+        ]);
 
     }
 

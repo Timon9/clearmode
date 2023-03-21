@@ -62,7 +62,7 @@ class ImagePostTest extends TestCase
         $this->post("/posts/image/store",[
             "title"=>$fakeTitle,
             "image_file"=>UploadedFile::fake()->image($fakeTitle.".jpg",800,800)
-        ])->assertOk();
+        ])->assertRedirect();
 
         $this->assertDatabaseHas("image_posts",[
             'title'=>$fakeTitle
