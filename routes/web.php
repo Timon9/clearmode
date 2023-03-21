@@ -51,7 +51,7 @@ Route::middleware('auth')->group(function () {
 
 // Public user account and posts.
 Route::prefix('@{userSlug}')->group(function () {
-    Route::get('/img/{imageId}/{imagePostSlug}',[ImagePostController::class,'show'])->name("imagepost.show");
+    Route::get('/{imageId}/{imagePostSlug}',[ImagePostController::class,'show'])->name("imagepost.show");
 });
 
 // Media

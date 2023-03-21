@@ -23,7 +23,7 @@ class ImagePostTest extends TestCase
     {
         $imagePost = ImagePost::factory()->create();
         $user = User::factory()->create();
-        $response = $this->get('@'.$user->slug.'/img/'. $imagePost->id."/".$imagePost->slug);
+        $response = $this->get('@'.$user->slug.'/'. $imagePost->id."/".$imagePost->slug);
         $response->assertStatus(200);
     }
     /**
@@ -35,7 +35,7 @@ class ImagePostTest extends TestCase
     {
         $imagePost = ImagePost::factory()->create();
         $user = User::factory()->create();
-        $response = $this->get('@'.$user->slug.'/img/'. $imagePost->id."/".$imagePost->slug);
+        $response = $this->get('@'.$user->slug.'/'. $imagePost->id."/".$imagePost->slug);
         $response->assertOk()->assertSeeText($imagePost->title);
     }
 
@@ -48,7 +48,7 @@ class ImagePostTest extends TestCase
     {
         $imagePost = ImagePost::factory()->create();
         $user = User::factory()->create();
-        $response = $this->get('@'.$user->slug.'/img/'. $imagePost->id."/".$imagePost->slug);
+        $response = $this->get('@'.$user->slug.'/'. $imagePost->id."/".$imagePost->slug);
         $response->assertOk()->assertSee($imagePost->url);
     }
 
