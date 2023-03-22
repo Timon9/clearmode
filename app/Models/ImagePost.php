@@ -2,48 +2,34 @@
 
 namespace App\Models;
 
-use App\Traits\Slugable;
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 
-class ImagePost extends Model
+class ImagePost extends Post
 {
-    use HasFactory, Slugable;
 
     /**
-     * The attributes that are mass assignable.
+     * The attributes that are mass assignable (extending the parent Post values).
      *
      * @var array<int, string>
      */
-    protected $fillable = [
-        'title',
+    protected $extend_fillable = [
         'url',
-        'slug',
     ];
 
      /**
-     * The attributes that should be cast.
+     * The attributes that should be cast (extending the parent Post values).
      *
      * @var array
      */
-    protected $casts = [
-        'title' => 'string',
+    protected $extend_casts = [
         'url' => 'string',
-        'slug' => 'string',
     ];
 
-     /**
-     * Set the slug attribute when adding the title.
-     *
-     * @param string $value
-     * @return void
-     */
-    public function setTitleAttribute(string $value)
+
+    public function __construct(array $attributes = [])
     {
-        $this->attributes['title'] = $value;
-        // Generate a unique slug
-        $this->attributes['slug'] = $this->createUniqueSlug($value);
+        parent::__construct($attributes);
+
+        $this->fillable = array_merge($this->fillable,$this->extend_fillable);
+        $this->casts = array_merge($this->casts,$this->extend_casts);
     }
-
-
 }

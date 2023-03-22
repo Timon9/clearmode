@@ -8,8 +8,7 @@ class ImagePostTest extends PostTestCase
 {
     public function __construct()
     {
-        parent::__construct();
-        $this->model = new ImagePost();
+        parent::__construct(new ImagePost());
     }
     /**
      * Basic test will be done in the parent class PostTest.

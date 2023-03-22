@@ -8,11 +8,15 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use Illuminate\Support\Str;
 
-class PostTestCase extends TestCase
+abstract class PostTestCase extends TestCase
 {
-    protected Model $model;
 
     use WithFaker, DatabaseMigrations;
+
+    public function __construct(protected Model $model)
+    {
+        parent::__construct();
+    }
 
     /**
      * Test if we can set a title

@@ -5,39 +5,20 @@ namespace Tests\Feature;
 use App\Models\ImagePost;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
-use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
-use Tests\TestCase;
 
-class ImagePostTest extends TestCase
+class ImagePostTest extends PostTestCase
 {
     use DatabaseMigrations, WithFaker;
-    /**
-     * Test if we can view a ImagePost
-     *
-     * @return void
-     */
-    public function test_image_post_endpoint()
+
+    public function __construct()
     {
-        $imagePost = ImagePost::factory()->create();
-        $user = User::factory()->create();
-        $response = $this->get('@'.$user->slug.'/'. $imagePost->id."/".$imagePost->slug);
-        $response->assertStatus(200);
+        parent::__construct(new ImagePost());
     }
-    /**
-     * Test if we can view a ImagePost title
-     *
-     * @return void
-     */
-    public function test_image_post_have_titles()
-    {
-        $imagePost = ImagePost::factory()->create();
-        $user = User::factory()->create();
-        $response = $this->get('@'.$user->slug.'/'. $imagePost->id."/".$imagePost->slug);
-        $response->assertOk()->assertSeeText($imagePost->title);
-    }
+
+
 
     /**
      * Test if we can view a ImagePost url
@@ -103,8 +84,10 @@ class ImagePostTest extends TestCase
         $this->assertDatabaseMissing("image_posts",[
             'title'=>$fakeTitle
         ]);
-
-
     }
+
+    /**
+     * TODO: User cant create image post with incomplete or wrong request data
+     */
 
 }
