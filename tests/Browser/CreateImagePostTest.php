@@ -4,7 +4,6 @@ namespace Tests\Browser;
 
 use App\Models\User;
 use GuzzleHttp\Psr7\UploadedFile;
-use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile as HttpUploadedFile;
 use Laravel\Dusk\Browser;
@@ -13,7 +12,7 @@ use Tests\DuskTestCase;
 
 class CreateImagePostTest extends DuskTestCase
 {
-    use DatabaseMigrations, WithFaker;
+    use WithFaker;
 
     /**
      * Test that the user can create an image post.
