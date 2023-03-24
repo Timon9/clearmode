@@ -52,6 +52,7 @@ Route::middleware('auth')->group(function () {
 // Public user account and posts.
 Route::prefix('@{userSlug}')->group(function () {
     Route::get('/{imageId}/{imagePostSlug}',[ImagePostController::class,'show'])->name("imagepost.show");
+    Route::delete('/{imageId}/{imagePostSlug}',[ImagePostController::class,'delete'])->name("imagepost.delete");
 });
 
 // Media

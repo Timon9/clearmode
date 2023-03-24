@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ImagePost;
 use Illuminate\Contracts\View\View;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -79,6 +80,13 @@ class ImagePostController extends Controller
             'imagePostSlug'=>$imagePost->slug,
         ]);
 
+    }
+
+    public function delete(string $userSlug, string $imagePostId, string $imagePostSlug){
+        $imagePost = ImagePost::findOrFail($imagePostId);
+        $imagePost->delete();
+
+        return new JsonResponse("ok");
     }
 
     /**

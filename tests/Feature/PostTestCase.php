@@ -58,11 +58,10 @@ abstract class PostTestCase extends TestCase
 
         // Act
         $this->get('@'.$user->slug.'/'. $post->id."/".$post->slug)->assertOk(); // Test if the creation succeeded
-        $this->delete('@'.$user->slug.'/'. $post->id."/".$post->slug); // Send the delete request
+        $this->delete('@'.$user->slug.'/'. $post->id."/".$post->slug)->assertOk(); // Send the delete request
 
         // Assert
         $this->get('@'.$user->slug.'/'. $post->id."/".$post->slug)->assertNotFound(); // Should now be removed and return a 404
-
     }
 }
 
