@@ -15,7 +15,7 @@
 
                      <div class="mt-3">
                       <h1>{{$imagePost->title}}</h1>
-                      <img src="{{$imagePost->url}}" alt="{{$imagePost->title}}"/>
+                      <img src="{{$imagePost->url}}" alt="{{$imagePost->title}}" id="imagePost"/>
                     </div>
 
                 </div>

@@ -25,7 +25,7 @@
                             <x-file-input id="image_file" name="image_file"  class="mt-1 block w-full"
                             required autofocus />
 
-                            <x-primary-button>{{ __('Create posts') }}</x-primary-button>
+                            <x-primary-button name="submit">{{ __('Create posts') }}</x-primary-button>
 
                         </form>
 
