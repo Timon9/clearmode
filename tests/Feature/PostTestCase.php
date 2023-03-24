@@ -30,6 +30,7 @@ abstract class PostTestCase extends TestCase
         $response = $this->get('@' . $post->user->slug . '/' . $post->id . "/" . $post->slug);
         $response->assertStatus(200);
     }
+
     /**
      * Test if we can view a Post title
      *

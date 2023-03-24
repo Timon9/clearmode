@@ -38,7 +38,8 @@ abstract class Post extends Model
     public function user(){
        return $this->belongsTo(User::class);
     }
-     /**
+
+    /**
      * Set the slug attribute when adding the title.
      *
      * @param string $value
