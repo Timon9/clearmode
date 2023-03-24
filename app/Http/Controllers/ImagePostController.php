@@ -11,6 +11,7 @@ use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\UnauthorizedException;
 
 class ImagePostController extends Controller
 {
@@ -62,7 +63,7 @@ class ImagePostController extends Controller
     public function store(Request $request): RedirectResponse
     {
 
-         $user = Auth::user();
+        $user = Auth::user();
 
         $imageFile = $request->file('image_file');
         $filePath = $imageFile->storePublicly("img"); // Internal storage path
@@ -72,6 +73,7 @@ class ImagePostController extends Controller
         $imagePost = new ImagePost();
         $imagePost->title = $request->title;
         $imagePost->url = $url;
+        $imagePost->user_id = $user->id;
         $imagePost->save();
 
         return Redirect::route('imagepost.show',[
@@ -84,6 +86,12 @@ class ImagePostController extends Controller
 
     public function delete(string $userSlug, string $imagePostId, string $imagePostSlug){
         $imagePost = ImagePost::findOrFail($imagePostId);
+        $user = Auth::user();
+
+        if($imagePost->user_id !== $user->id){
+            abort(403);
+        }
+
         $imagePost->delete();
 
         return new JsonResponse("ok");
