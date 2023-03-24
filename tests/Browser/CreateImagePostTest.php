@@ -4,6 +4,8 @@ namespace Tests\Browser;
 
 use App\Models\User;
 use GuzzleHttp\Psr7\UploadedFile;
+use Illuminate\Foundation\Testing\DatabaseMigrations;
+use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile as HttpUploadedFile;
 use Laravel\Dusk\Browser;
@@ -12,17 +14,19 @@ use Tests\DuskTestCase;
 
 class CreateImagePostTest extends DuskTestCase
 {
-    use WithFaker;
+    use WithFaker, DatabaseMigrations;
 
     /**
      * Test that the user can create an image post.
      */
     public function testUserCanCreateAnImagePost(): void
     {
-        $title = $this->faker->sentence();
-        $user = User::factory()->create();
 
-        $this->browse(function (Browser $browser) use ($user, $title) {
+        $this->browse(function (Browser $browser) {
+
+            $title = $this->faker->sentence();
+            $user = User::factory()->create();
+
             $browser->loginAs($user)
                 ->visit('posts/image/create');
 
@@ -44,8 +48,7 @@ class CreateImagePostTest extends DuskTestCase
             $browser->assertVisible('#imagePost');
 
             // Cleanup
-            Storage::delete('public/images/'.$file->getClientOriginalName());
-
+            Storage::delete('public/images/' . $file->getClientOriginalName());
         });
     }
 }
