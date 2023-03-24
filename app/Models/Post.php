@@ -30,6 +30,14 @@ abstract class Post extends Model
         'slug' => 'string',
     ];
 
+    /**
+     * User who owns the post
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function user(){
+       return $this->belongsTo(User::class);
+    }
      /**
      * Set the slug attribute when adding the title.
      *

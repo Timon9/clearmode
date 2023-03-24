@@ -33,6 +33,11 @@ class ImagePostTest extends PostTestCase
         $response->assertOk()->assertSee($imagePost->url);
     }
 
+    /**
+     * Test if the user can create a image post
+     *
+     * @return void
+     */
     public function test_user_can_create_image_post(){
         $user = User::factory()->create();
         $this->actingAs($user);
@@ -71,6 +76,11 @@ class ImagePostTest extends PostTestCase
         $this->get("/posts/image/create")->assertOk();
     }
 
+    /**
+     * Test if you can only create a image post if logged in
+     *
+     * @return void
+     */
     public function test_cant_create_image_post_if_not_logged_in(){
         $fakeTitle = $this->faker()->uuid(); // Use uuidv4 to be sure the title is unique
 
@@ -85,9 +95,5 @@ class ImagePostTest extends PostTestCase
             'title'=>$fakeTitle
         ]);
     }
-
-    /**
-     * TODO: User cant create image post with incomplete or wrong request data
-     */
 
 }
