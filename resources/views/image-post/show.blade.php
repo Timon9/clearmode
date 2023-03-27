@@ -17,6 +17,8 @@
                       <h1>{{$imagePost->title}}</h1>
                       <img src="{{$imagePost->url}}" alt="{{$imagePost->title}}" id="imagePost"/>
                     </div>
+                    <x-danger-button id="delete_post" name="delete_post">{{ __('Delete') }}</x-danger-button>
+
 
                 </div>
             </div>

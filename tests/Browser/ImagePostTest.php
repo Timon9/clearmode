@@ -2,17 +2,19 @@
 
 namespace Tests\Browser;
 
+use App\Models\ImagePost;
 use App\Models\User;
 use GuzzleHttp\Psr7\UploadedFile;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Illuminate\Foundation\Testing\DatabaseTransactions;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Http\UploadedFile as HttpUploadedFile;
+use Image;
 use Laravel\Dusk\Browser;
 use Storage;
 use Tests\DuskTestCase;
 
-class CreateImagePostTest extends DuskTestCase
+class ImagePostTest extends DuskTestCase
 {
     use WithFaker, DatabaseMigrations;
 
@@ -49,6 +51,28 @@ class CreateImagePostTest extends DuskTestCase
 
             // Cleanup
             Storage::delete('public/images/' . $file->getClientOriginalName());
+        });
+    }
+
+      /**
+     * Test that the user can delete an image post.
+     */
+    public function testUserCanDeleteAnImagePost(): void
+    {
+
+        $this->browse(function (Browser $browser) {
+
+            // Arrange
+            $user = User::factory()->create();
+            $imagePost = ImagePost::factory()->create([
+                'user_id'=>$user->id
+            ]);
+
+            $browser->loginAs($user)
+                ->visit('/@'.$user->slug.'/'.$imagePost->id.'/'.$imagePost->slug)->assertSee($imagePost->title);
+
+            // Act
+            $browser->press('delete_post');
         });
     }
 }
