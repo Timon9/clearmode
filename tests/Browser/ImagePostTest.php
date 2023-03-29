@@ -73,6 +73,14 @@ class ImagePostTest extends DuskTestCase
 
             // Act
             $browser->press('delete_post');
+            $browser->assertVisible("#confirmDeleteDialog");
+            $browser->assertSee('Are you sure you want to delete this post');
+            $browser->press('confirm_delete');
+
+            // Assert
+            $browser->loginAs($user)
+            ->visit('/@'.$user->slug.'/'.$imagePost->id.'/'.$imagePost->slug)->assertDontSee($imagePost->title);
+
         });
     }
 }
